@@ -1,0 +1,32 @@
+<div class="wrapper">
+	<nav class="blue">
+		<div class="nav-wrapper">
+			<div class="row">
+				<div class="col s3 title-wrapper">
+					<a class="title white-text">{{ fileName }}</a>
+				</div>
+				<div class="col s9" id="toolbar">
+					<tabs *ngIf="loaded &&
+					             extensions != null &&
+					             extensions?.length > 0 &&
+					             selectedFormat != null"
+					      [tabs]="extensions"
+					      [selectedFormat]='selectedFormat'
+					      (changeTab)="changeSelectedFormatEvent($event)"></tabs>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+</div>
+
+<div class="progress light-blue" style="margin:0;" *ngIf="!loaded">
+	<div class="indeterminate white"></div>
+</div>
+
+<editor [id]="fileId"
+        [config] = "configuration"
+        [format]="selectedFormat"
+        [language]='languageSettings'
+        (fileExtension)="extensionSelectedEvent($event)"
+		(fileNameChange)="fileNameChangedEvent($event)"></editor>

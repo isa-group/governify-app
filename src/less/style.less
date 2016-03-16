@@ -1,0 +1,121 @@
+@import "normalize";
+@import "mixins";
+@import "theme";
+@import "global";
+
+html, body {
+    height: 100%;
+}
+body{
+    font-size: @fontSize;
+    margin: 0 auto;
+    font-family: @fontFamily;
+}
+h1 {
+    color: @naviblue;
+}
+
+.wrapper{
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 999;
+}
+
+editor {
+    position: absolute;
+    top: 48px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#editor {
+    height: 100%;
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    *{
+        font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    }
+    div {
+        font: inherit!important
+    }
+}
+nav {
+    height: 48px;
+    padding: 0 24px;
+
+    .nav-wrapper {
+        height: 48px;
+
+        .row .col{
+            height: 48px;
+        }
+    }
+    .nav-wrapper > a{
+        color: #ffffff;
+    }
+
+    .title-wrapper{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        .title{
+            font-size: 24px;
+            cursor: default;
+        }
+    }
+
+    .tabs{
+        max-width: 400px;
+        float: right;
+        overflow-x: hidden;
+    }
+}
+#toolbar{
+    margin-bottom: 0;
+    //height: 48px;
+
+    .tabs .indicator{
+        background-color: #ffffff;
+    }
+    li a{
+        color: #BCE0FC;
+        font: 500 14px/48px Roboto,sans-serif;
+
+        &:hover,
+        &.active{
+            background-color: transparent;
+            color: #ffffff;
+        }
+    }
+
+
+}
+#loader{
+    .vertical-align();
+    text-align: center;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+footer {
+    position: absolute;
+    width: 100%;
+    background-color: @skyblue;
+    color: @black_google;
+    height: @height_footer;
+    bottom: 0;
+    div{
+        position: absolute;
+        .vertical-align();
+        padding: 0 1em;
+    }
+}
+
+@media only screen and (min-width: 601px){
+    nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i{
+        height: 48px;
+        line-height: 48px;
+    }
+}
