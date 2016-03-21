@@ -17,16 +17,18 @@ import {ILanguage, IFormat, IOperation, IConfiguration, IAnnotations} from "../i
 })
 export class Editor implements OnChanges {
     @Input() id: string;
-    @Input() format: string;
+    @Input() selectedFormat: string;
     @Input() language: ILanguage;
     @Input() config: IConfiguration;
     @Output() fileExtension: EventEmitter<string> = new EventEmitter<string>();
     @Output() fileNameChange: EventEmitter<string> = new EventEmitter<string>();
+    @Input() disabledTabs: boolean;
+    @Output() disabledTabsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
     editor: ace;
     saveTimeout;
-    fileName: string;
-    selectedFormat: IFormat;
-    oldFormat: IFormat;
+    @Input() fileName: string;
+    formatSettings: IFormat;
+    oldFormatSettings: IFormat;
     hasError: boolean;
     ignoreChangeAceEvent: boolean = false;
 
@@ -37,18 +39,18 @@ export class Editor implements OnChanges {
             this.setEditorParameters(this.language.formats[0]);
         }
 
-        if (changes['format']) {
-            if (Object.keys(changes['format'].previousValue).length > 0 && Object.keys(changes['format'].currentValue).length > 0
-                || (changes['format'].currentValue != "" && changes['format'].previousValue != "")) {
+        if (changes['selectedFormat']) {
+            if (Object.keys(changes['selectedFormat'].previousValue).length > 0 && Object.keys(changes['selectedFormat'].currentValue).length > 0
+                || (changes['selectedFormat'].currentValue != "" && changes['selectedFormat'].previousValue != "")) {
 
                 if (this.language != undefined) {
-                    this.oldFormat = this.getFormatFromId(changes["format"].previousValue);
-                    this.selectedFormat = this.getFormatFromId(changes["format"].currentValue);
-                    if (this.selectedFormat.checkLanguage) {
-                        this.convertLanguage(this.selectedFormat.format, this.oldFormat.format);
+                    this.oldFormatSettings = this.getFormatFromId(changes["selectedFormat"].previousValue);
+                    this.formatSettings = this.getFormatFromId(changes["selectedFormat"].currentValue);
+                    if (this.formatSettings.checkLanguage) {
+                        this.convertLanguage(this.formatSettings.format, this.oldFormatSettings.format);
                         this.checkEditorLanguage();
                     } else {
-                        this.convertLanguage(this.selectedFormat.format, this.oldFormat.format);
+                        this.convertLanguage(this.formatSettings.format, this.oldFormatSettings.format);
                     }
                 }
             }
@@ -82,50 +84,56 @@ export class Editor implements OnChanges {
         }
     }
 
-    setAnnotations(annotations) {
-        this.editor.getSession().setAnnotations(annotations);
-    }
 
     initAce() {
         this.editor = ace.edit("editor");
 
         // Disable sintax error
-        this.editor.getSession().setUseWorker(false);
+        // this.editor.getSession().setUseWorker(true);
 
         //Remove 80character vertical line
         this.editor.setShowPrintMargin(false);
     }
 
+    setAnnotations(annotations) {
+        this.editor.getSession().setAnnotations(annotations);
+    }
+
     replaceEditorContent(newContent: string) {
         this.ignoreChangeAceEvent = true;
         this.editor.setValue(newContent, -1);
-        if (this.selectedFormat.checkLanguage) {
-            this.checkEditorLanguage();
-        }
         this.ignoreChangeAceEvent = false;
+
+        if (this.formatSettings.checkLanguage) {
+            this.checkEditorLanguage();
+        } else {
+            this.disabledTabsChange.emit(false);
+        }
     }
 
-    setEditorParameters(selectedFormat: IFormat){
-        this.selectedFormat = selectedFormat;
+    setEditorParameters(formatSettings: IFormat){
+        this.formatSettings = formatSettings;
 
-        if(this.selectedFormat.editorThemeId){
-            this.editor.setTheme(this.selectedFormat.editorThemeId);
+        if(this.formatSettings.editorThemeId){
+            this.editor.setTheme(this.formatSettings.editorThemeId);
         }
-        if(this.selectedFormat.editorModeId){
-            this.editor.getSession().setMode(this.selectedFormat.editorModeId);
+        if(this.formatSettings.editorModeId){
+            this.editor.getSession().setMode(this.formatSettings.editorModeId);
         }
     }
 
     checkEditorLanguage() : Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this._languageService.postCheckLanguage(this.config.languages[this.language.id], this.selectedFormat.format, this.editor.getValue(), this.fileName)
+            this._languageService.postCheckLanguage(this.config.languages[this.language.id], this.formatSettings.format, this.editor.getValue(), this.fileName)
                 .subscribe(
                     (data: IAnnotations) => {
                         this.setAnnotations(data.annotations);
                         if (data.status === 'OK'){
                             this.hasError = false;
+                            this.disabledTabsChange.emit(false);
                         } else {
                             this.hasError = true;
+                            this.disabledTabsChange.emit(true);
                         }
                         resolve();
                     },
@@ -133,7 +141,7 @@ export class Editor implements OnChanges {
                         console.error(err);
                         reject();
                     }
-                );
+            );
         });
     }
 
@@ -141,7 +149,7 @@ export class Editor implements OnChanges {
     setEditorHandlers() {
         this.editor.on('change', (content) => {
             if (!this.ignoreChangeAceEvent) {
-                if (this.selectedFormat.checkLanguage) {
+                if (this.formatSettings.checkLanguage) {
                     this.checkEditorLanguage().then(() => {
                         if (!this.hasError) {
                             if (this.saveTimeout !== null) {
@@ -162,19 +170,18 @@ export class Editor implements OnChanges {
         });
     }
 
-    convertLanguage(desiredFormat: string, oldFormat: string){
+    convertLanguage(desiredFormat: string, oldFormatSettings: string){
         let langId = this.config.languages[this.language.id],
             content = this.editor.getValue();
 
         if(!this.hasError /*&& content !== null && content !== ""*/) {
-            this._languageService.convertLanguage(langId, oldFormat, desiredFormat, content, this.fileName)
+            this._languageService.convertLanguage(langId, oldFormatSettings, desiredFormat, content, this.fileName)
                 .subscribe(
                     (res: IAnnotations) => {
                         if(res.status == 'OK'){
                             let content = res.data;
                             this.replaceEditorContent(content);
                         }
-
                     },
                     (err) => {
                         console.error(err);

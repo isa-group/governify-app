@@ -63,6 +63,11 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                      * @type {string[]}
                      */
                     this.extensions = [''];
+                    /**
+                     * Whether the tabs are disabled.
+                     * @type {boolean}
+                     */
+                    this.disabledTabs = false;
                     $('body').removeClass('unresolved');
                     this.languages = {};
                     var getConfigLang = new Promise(function (resolve, reject) {
@@ -98,14 +103,14 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     });
                 }
                 AppComponent.prototype.getUrlParameters = function (param) {
-                    var result = null, query = window.location.search, map = {}, state;
+                    var result = null, query = window.location.search, map = {};
                     if (param === null || query === '') {
                         return result;
                     }
                     var groups = query.substr(1).split("&");
                     for (var i in groups) {
-                        i = groups[i].split("=");
-                        map[decodeURIComponent(i[0])] = decodeURIComponent(i[1]);
+                        var _a = groups[i].split("="), key = _a[0], val = _a[1];
+                        map[key] = val;
                     }
                     if (map != null) {
                         var value = map[param];
@@ -133,15 +138,6 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                 AppComponent.prototype.fileNameChangedEvent = function (fileName) {
                     this.fileName = fileName;
                     this.loaded = true;
-                };
-                AppComponent.prototype.changeSelectedFormatEvent = function (formatId) {
-                    for (var _i = 0, _a = this.languageSettings.formats; _i < _a.length; _i++) {
-                        var f = _a[_i];
-                        if (f.format === formatId) {
-                            this.selectedFormat = f.format;
-                            break;
-                        }
-                    }
                 };
                 AppComponent = __decorate([
                     core_1.Component({

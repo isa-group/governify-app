@@ -38,6 +38,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                     this._languageService = _languageService;
                     this.fileExtension = new core_1.EventEmitter();
                     this.fileNameChange = new core_1.EventEmitter();
+                    this.disabledTabsChange = new core_1.EventEmitter();
                     this.ignoreChangeAceEvent = false;
                 }
                 Editor.prototype.ngOnChanges = function (changes) {
@@ -45,18 +46,18 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                     if (changes['language'] && typeof changes["language"].currentValue !== 'undefined') {
                         this.setEditorParameters(this.language.formats[0]);
                     }
-                    if (changes['format']) {
-                        if (Object.keys(changes['format'].previousValue).length > 0 && Object.keys(changes['format'].currentValue).length > 0
-                            || (changes['format'].currentValue != "" && changes['format'].previousValue != "")) {
+                    if (changes['selectedFormat']) {
+                        if (Object.keys(changes['selectedFormat'].previousValue).length > 0 && Object.keys(changes['selectedFormat'].currentValue).length > 0
+                            || (changes['selectedFormat'].currentValue != "" && changes['selectedFormat'].previousValue != "")) {
                             if (this.language != undefined) {
-                                this.oldFormat = this.getFormatFromId(changes["format"].previousValue);
-                                this.selectedFormat = this.getFormatFromId(changes["format"].currentValue);
-                                if (this.selectedFormat.checkLanguage) {
-                                    this.convertLanguage(this.selectedFormat.format, this.oldFormat.format);
+                                this.oldFormatSettings = this.getFormatFromId(changes["selectedFormat"].previousValue);
+                                this.formatSettings = this.getFormatFromId(changes["selectedFormat"].currentValue);
+                                if (this.formatSettings.checkLanguage) {
+                                    this.convertLanguage(this.formatSettings.format, this.oldFormatSettings.format);
                                     this.checkEditorLanguage();
                                 }
                                 else {
-                                    this.convertLanguage(this.selectedFormat.format, this.oldFormat.format);
+                                    this.convertLanguage(this.formatSettings.format, this.oldFormatSettings.format);
                                 }
                             }
                         }
@@ -81,44 +82,49 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                         });
                     }
                 };
-                Editor.prototype.setAnnotations = function (annotations) {
-                    this.editor.getSession().setAnnotations(annotations);
-                };
                 Editor.prototype.initAce = function () {
                     this.editor = ace.edit("editor");
                     // Disable sintax error
-                    this.editor.getSession().setUseWorker(false);
+                    // this.editor.getSession().setUseWorker(true);
                     //Remove 80character vertical line
                     this.editor.setShowPrintMargin(false);
+                };
+                Editor.prototype.setAnnotations = function (annotations) {
+                    this.editor.getSession().setAnnotations(annotations);
                 };
                 Editor.prototype.replaceEditorContent = function (newContent) {
                     this.ignoreChangeAceEvent = true;
                     this.editor.setValue(newContent, -1);
-                    if (this.selectedFormat.checkLanguage) {
+                    this.ignoreChangeAceEvent = false;
+                    if (this.formatSettings.checkLanguage) {
                         this.checkEditorLanguage();
                     }
-                    this.ignoreChangeAceEvent = false;
-                };
-                Editor.prototype.setEditorParameters = function (selectedFormat) {
-                    this.selectedFormat = selectedFormat;
-                    if (this.selectedFormat.editorThemeId) {
-                        this.editor.setTheme(this.selectedFormat.editorThemeId);
+                    else {
+                        this.disabledTabsChange.emit(false);
                     }
-                    if (this.selectedFormat.editorModeId) {
-                        this.editor.getSession().setMode(this.selectedFormat.editorModeId);
+                };
+                Editor.prototype.setEditorParameters = function (formatSettings) {
+                    this.formatSettings = formatSettings;
+                    if (this.formatSettings.editorThemeId) {
+                        this.editor.setTheme(this.formatSettings.editorThemeId);
+                    }
+                    if (this.formatSettings.editorModeId) {
+                        this.editor.getSession().setMode(this.formatSettings.editorModeId);
                     }
                 };
                 Editor.prototype.checkEditorLanguage = function () {
                     var _this = this;
                     return new Promise(function (resolve, reject) {
-                        _this._languageService.postCheckLanguage(_this.config.languages[_this.language.id], _this.selectedFormat.format, _this.editor.getValue(), _this.fileName)
+                        _this._languageService.postCheckLanguage(_this.config.languages[_this.language.id], _this.formatSettings.format, _this.editor.getValue(), _this.fileName)
                             .subscribe(function (data) {
                             _this.setAnnotations(data.annotations);
                             if (data.status === 'OK') {
                                 _this.hasError = false;
+                                _this.disabledTabsChange.emit(false);
                             }
                             else {
                                 _this.hasError = true;
+                                _this.disabledTabsChange.emit(true);
                             }
                             resolve();
                         }, function (err) {
@@ -131,7 +137,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                     var _this = this;
                     this.editor.on('change', function (content) {
                         if (!_this.ignoreChangeAceEvent) {
-                            if (_this.selectedFormat.checkLanguage) {
+                            if (_this.formatSettings.checkLanguage) {
                                 _this.checkEditorLanguage().then(function () {
                                     if (!_this.hasError) {
                                         if (_this.saveTimeout !== null) {
@@ -148,11 +154,11 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                         }
                     });
                 };
-                Editor.prototype.convertLanguage = function (desiredFormat, oldFormat) {
+                Editor.prototype.convertLanguage = function (desiredFormat, oldFormatSettings) {
                     var _this = this;
                     var langId = this.config.languages[this.language.id], content = this.editor.getValue();
                     if (!this.hasError /*&& content !== null && content !== ""*/) {
-                        this._languageService.convertLanguage(langId, oldFormat, desiredFormat, content, this.fileName)
+                        this._languageService.convertLanguage(langId, oldFormatSettings, desiredFormat, content, this.fileName)
                             .subscribe(function (res) {
                             if (res.status == 'OK') {
                                 var content_1 = res.data;
@@ -184,7 +190,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                 __decorate([
                     core_1.Input(), 
                     __metadata('design:type', String)
-                ], Editor.prototype, "format", void 0);
+                ], Editor.prototype, "selectedFormat", void 0);
                 __decorate([
                     core_1.Input(), 
                     __metadata('design:type', Object)
@@ -201,6 +207,18 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                     core_1.Output(), 
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "fileNameChange", void 0);
+                __decorate([
+                    core_1.Input(), 
+                    __metadata('design:type', Boolean)
+                ], Editor.prototype, "disabledTabs", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Editor.prototype, "disabledTabsChange", void 0);
+                __decorate([
+                    core_1.Input(), 
+                    __metadata('design:type', String)
+                ], Editor.prototype, "fileName", void 0);
                 Editor = __decorate([
                     core_1.Component({
                         selector: 'editor',

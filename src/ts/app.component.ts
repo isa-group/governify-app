@@ -79,6 +79,11 @@ export class AppComponent {
      * @type {ILanguage}
      */
     languageSettings: ILanguage;
+    /**
+     * Whether the tabs are disabled.
+     * @type {boolean}
+     */
+    disabledTabs: boolean = false;
 
     constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {
         $('body').removeClass('unresolved');
@@ -129,16 +134,15 @@ export class AppComponent {
     getUrlParameters(param) {
         let result = null,
             query = window.location.search,
-            map: Object = {},
-            state: string;
+            map: Object = {};
         if(param === null || query === '') {
             return result;
         }
 
-        let groups: Array<string> = query.substr(1).split("&");
+        let groups: string[] = query.substr(1).split("&");
         for (let i in groups) {
-            i = groups[i].split("=");
-            map[decodeURIComponent(i[0])] = decodeURIComponent(i[1]);
+            let [key, val] = groups[i].split("=");
+            map[key] = val;
         }
         if (map != null) {
             var value = map[param];
@@ -168,13 +172,4 @@ export class AppComponent {
         this.loaded = true;
     }
 
-    changeSelectedFormatEvent( formatId: string) : void {
-        for(let f of this.languageSettings.formats) {
-            if(f.format === formatId) {
-                this.selectedFormat = f.format;
-                break;
-            }
-        }
-
-    }
 }

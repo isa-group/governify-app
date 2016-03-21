@@ -1,4 +1,8 @@
 <ul class="tabs">
-	<li *ngFor="#tab of tabs" (click)="setSelectedTab($event, tab)" class="tab col s3 blue"><a href="#{{ tab }}" class="waves-effect waves-light">{{ tab }}</a></li>
+	<li *ngFor="#tab of tabs" (click)="setSelectedTab($event, tab)" class="tab col s3 blue" [class.disabled]="disabledTabs">
+		<a href="#{{ tab }}" class="waves-effect waves-light" [ngClass]="{'disabled': disabledTabs}">
+			{{ tab }}
+		</a>
+	</li>
 </ul>
 <div *ngFor="#tab of tabs" id="{{ tab }}" class="col s12" style="display: none;"></div>

@@ -20,31 +20,41 @@ System.register(["angular2/core"], function(exports_1, context_1) {
         execute: function() {
             Tabs = (function () {
                 function Tabs() {
-                    this.changeTab = new core_1.EventEmitter();
+                    this.disabledTabsChange = new core_1.EventEmitter();
+                    this.selectedFormatChange = new core_1.EventEmitter();
                 }
-                Tabs.prototype.setSelectedTab = function ($event, language) {
+                Tabs.prototype.setSelectedTab = function ($event, newFormat) {
                     $event.preventDefault();
-                    if (this.selectedFormat === language)
+                    if (this.selectedFormat === newFormat || this.disabledTabs) {
                         return;
-                    this.selectedFormat = language;
-                    this.changeTab.emit(this.selectedFormat);
+                    }
+                    this.disabledTabsChange.emit(true);
+                    this.selectedFormatChange.emit(newFormat);
                 };
                 __decorate([
                     core_1.Input(), 
                     __metadata('design:type', Array)
                 ], Tabs.prototype, "tabs", void 0);
                 __decorate([
-                    core_1.Output(), 
-                    __metadata('design:type', core_1.EventEmitter)
-                ], Tabs.prototype, "changeTab", void 0);
-                __decorate([
                     core_1.Input(), 
                     __metadata('design:type', String)
                 ], Tabs.prototype, "selectedFormat", void 0);
+                __decorate([
+                    core_1.Input(), 
+                    __metadata('design:type', Boolean)
+                ], Tabs.prototype, "disabledTabs", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Tabs.prototype, "disabledTabsChange", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Tabs.prototype, "selectedFormatChange", void 0);
                 Tabs = __decorate([
                     core_1.Component({
                         selector: 'tabs',
-                        templateUrl: 'templates/tabs.html',
+                        templateUrl: 'templates/tabs.html'
                     }), 
                     __metadata('design:paramtypes', [])
                 ], Tabs);

@@ -14,14 +14,12 @@ body{
 h1 {
     color: @naviblue;
 }
-
 .wrapper{
     position: absolute;
     right: 0;
     left: 0;
     z-index: 999;
 }
-
 editor {
     position: absolute;
     top: 48px;
@@ -43,10 +41,8 @@ editor {
 nav {
     height: 48px;
     padding: 0 24px;
-
     .nav-wrapper {
         height: 48px;
-
         .row .col{
             height: 48px;
         }
@@ -54,18 +50,15 @@ nav {
     .nav-wrapper > a{
         color: #ffffff;
     }
-
     .title-wrapper{
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-
         .title{
             font-size: 24px;
             cursor: default;
         }
     }
-
     .tabs{
         max-width: 400px;
         float: right;
@@ -79,37 +72,18 @@ nav {
     .tabs .indicator{
         background-color: #ffffff;
     }
-    li a{
-        color: #BCE0FC;
-        font: 500 14px/48px Roboto,sans-serif;
-
-        &:hover,
-        &.active{
+    li{
+        a{
+            font: 500 14px/48px Roboto,sans-serif;
             background-color: transparent;
             color: #ffffff;
+
+            &:not(.active).disabled{
+                // color: #BCE0FC
+                color: #64B5F6;
+                cursor: not-allowed;
+            }
         }
-    }
-
-
-}
-#loader{
-    .vertical-align();
-    text-align: center;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-footer {
-    position: absolute;
-    width: 100%;
-    background-color: @skyblue;
-    color: @black_google;
-    height: @height_footer;
-    bottom: 0;
-    div{
-        position: absolute;
-        .vertical-align();
-        padding: 0 1em;
     }
 }
 
