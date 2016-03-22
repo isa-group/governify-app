@@ -1,6 +1,3 @@
-/**
- * Created by mrivero on 27/12/2015.
- */
 System.register(['angular2/core', 'angular2/http', './services/languageService', './services/GoogleService', 'rxjs/Rx', './components/tabs', './components/editor'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
@@ -43,30 +40,10 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.http = http;
                     this._languageService = _languageService;
                     this._GS = _GS;
-                    /**
-                     * The app title that will hold the file name.
-                     * @type {string}
-                     */
                     this.fileName = 'Governify';
-                    /**
-                     * True when the application has loaded all the initial components.
-                     * @type {boolean}
-                     */
                     this.loaded = false;
-                    /**
-                     * Define the selected tab from [Tabs] web component.
-                     * @type {string}
-                     */
                     this.selectedFormat = '';
-                    /**
-                     * Different extensions on the [languageSettings] used on [Tabs] to create every tab.
-                     * @type {string[]}
-                     */
                     this.extensions = [''];
-                    /**
-                     * Whether the tabs are disabled.
-                     * @type {boolean}
-                     */
                     this.disabledTabs = false;
                     $('body').removeClass('unresolved');
                     this.languages = {};

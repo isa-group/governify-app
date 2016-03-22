@@ -1,6 +1,3 @@
-/**
- * Created by mrivero on 28/02/2016.
- */
 System.register(['angular2/core', 'angular2/http'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;

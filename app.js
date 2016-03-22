@@ -14,23 +14,24 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'client', 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('less-middleware')(path.join(__dirname, 'src','less'),{
+app.use(require('less-middleware')(path.join(__dirname, 'client', 'src', 'less'),{
 	preprocess: {
 		path: function(pathname, req) {
 			return pathname.replace(path.sep + 'stylesheets' + path.sep, path.sep);
 		}
 	},
-	dest: path.join(__dirname, 'public'),
+	dest: path.join(__dirname, 'client', 'public'),
 	force: true,
 	debug: true
 }));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/node_modules', express.static(path.join(__dirname, 'node_modules')));
+app.use(express.static(path.join(__dirname, 'client', 'public')));
+app.use('/node_modules', express.static(path.join(__dirname, 'client', 'node_modules')));
+app.use('/src/ts', express.static(path.join(__dirname, 'client', 'src', 'ts')));
 
 app.use('/', routes);
 app.use('/api', api);

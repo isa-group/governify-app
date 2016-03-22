@@ -63,9 +63,6 @@ System.register(['angular2/core', 'angular2/http', "rxjs/Observable"], function(
                         .catch(this.handleError);
                 };
                 LanguageService.prototype.handleError = function (error) {
-                    // in a real world app, we may send the server to some remote logging infrastructure
-                    // instead of just logging it to the console
-                    // return Observable.throw(error.json().error || 'Server error');
                     return Observable_1.Observable.throw('Server error');
                 };
                 LanguageService = __decorate([

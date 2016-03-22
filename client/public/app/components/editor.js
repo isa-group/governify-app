@@ -1,7 +1,3 @@
-/**
- * Created by mrivero on 20/02/2016.
- */
-/// <reference path="../d/ace.d.ts" />
 System.register(["angular2/core", "../services/GoogleService", '../services/languageService', 'angular2/http'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
@@ -84,9 +80,6 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                 };
                 Editor.prototype.initAce = function () {
                     this.editor = ace.edit("editor");
-                    // Disable sintax error
-                    // this.editor.getSession().setUseWorker(true);
-                    //Remove 80character vertical line
                     this.editor.setShowPrintMargin(false);
                 };
                 Editor.prototype.setAnnotations = function (annotations) {
@@ -157,7 +150,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                 Editor.prototype.convertLanguage = function (desiredFormat, oldFormatSettings) {
                     var _this = this;
                     var langId = this.config.languages[this.language.id], content = this.editor.getValue();
-                    if (!this.hasError /*&& content !== null && content !== ""*/) {
+                    if (!this.hasError) {
                         this._languageService.convertLanguage(langId, oldFormatSettings, desiredFormat, content, this.fileName)
                             .subscribe(function (res) {
                             if (res.status == 'OK') {

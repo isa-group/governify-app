@@ -1,0 +1,34 @@
+{
+    "name": "governify_app",
+    "version": "1.1.0",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/isa-group/governify-app.git"
+    },
+    "authors": [
+        "José Javier Felipe Salmoral",
+        "Rafael Miguel Rivero Rodríguez"
+    ],
+    "keywords": [
+        "Angular2",
+        "TypeScript",
+        "GitHub",
+        "Nodejs",
+        "Express",
+        "Less",
+        "EJS",
+        "Firebase",
+        "Heroku"
+    ],
+    "dependencies": {
+        "angular2": "2.0.0-beta.0",
+        "es6-promise": "^3.0.2",
+        "es6-shim": "^0.33.3",
+        "materialize-css": "0.97.5",
+        "reflect-metadata": "0.1.2",
+        "rxjs": "5.0.0-beta.0",
+        "systemjs": "0.19.6",
+        "zone.js": "0.5.10"
+    }
+}
