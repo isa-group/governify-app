@@ -8,12 +8,13 @@ import {GoogleService} from "../services/GoogleService";
 import {LanguageService} from '../services/languageService';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
 import {ILanguage, IFormat, IOperation, IConfiguration, IAnnotations} from "../interfaces";
-
+import {ActionButton} from './action-button.component';
 
 @Component({
     selector: 'editor',
     templateUrl: 'templates/editor.html',
-    providers: [LanguageService, GoogleService]
+    providers: [LanguageService, GoogleService],
+	directives: [ActionButton]
 })
 export class Editor implements OnChanges {
     @Input() id: string;
