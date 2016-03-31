@@ -3,12 +3,12 @@
  */
 /// <reference path="../d/ace.d.ts" />
 
-import {Component, Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter} from "angular2/core";
-import {GoogleService} from "../services/GoogleService";
+import {Component, Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter} from 'angular2/core';
+import {GoogleService} from '../services/GoogleService';
 import {LanguageService} from '../services/languageService';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
-import {ILanguage, IFormat, IOperation, IConfiguration, IAnnotations} from "../interfaces";
-import {ActionButton} from './action-button.component';
+import {ILanguage, IFormat, IOperation, IConfiguration, IAnnotations} from '../interfaces';
+import {ActionButton} from './action-button';
 
 @Component({
     selector: 'editor',
@@ -25,7 +25,7 @@ export class Editor implements OnChanges {
     @Output() fileNameChange: EventEmitter<string> = new EventEmitter<string>();
     @Input() disabledTabs: boolean;
     @Output() disabledTabsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
-    editor: ace;
+    editor: AceAjax.Editor;
     saveTimeout;
     @Input() fileName: string;
     formatSettings: IFormat;
@@ -89,9 +89,6 @@ export class Editor implements OnChanges {
     initAce() {
         this.editor = ace.edit("editor");
 
-        // Disable sintax error
-        // this.editor.getSession().setUseWorker(true);
-
         //Remove 80character vertical line
         this.editor.setShowPrintMargin(false);
     }
@@ -145,7 +142,6 @@ export class Editor implements OnChanges {
             );
         });
     }
-
 
     setEditorHandlers() {
         this.editor.on('change', (content) => {

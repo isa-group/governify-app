@@ -1,4 +1,4 @@
-System.register(["angular2/core"], function(exports_1, context_1) {
+System.register(['angular2/core'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -20,6 +20,27 @@ System.register(["angular2/core"], function(exports_1, context_1) {
         execute: function() {
             ActionButton = (function () {
                 function ActionButton() {
+                    this.iconMap = {
+                        "CheckCompliance": "assignment_turned_in",
+                        "checkComplianceAuto": "assignment_turned_in",
+                        "checkConsistency": "spellcheck",
+                        "ComplianceAnalisys": "assignment_turned_in",
+                        "computestats": "equalizer",
+                        "execute": "settings",
+                        "generateAFM": "build",
+                        "generateOPL": "build",
+                        "getOptimalConfiguration": "monetization_on",
+                        "multiplecomparison": "compare",
+                        "outofrange": "all_out",
+                        "queryQ2": "query_builder",
+                        "queryQ4": "query_builder",
+                        "queryQ5": "query_builder",
+                        "queryQ6": "query_builder",
+                        "queryQ7": "query_builder",
+                        "rank": "filter_1",
+                        "smallsampling": "colorize",
+                        "transform2iAgree": "transform"
+                    };
                 }
                 ActionButton.prototype.perform = function ($event, operationId) {
                     $event.preventDefault();
@@ -41,4 +62,4 @@ System.register(["angular2/core"], function(exports_1, context_1) {
         }
     }
 });
-//# sourceMappingURL=action-button.component.js.map
+//# sourceMappingURL=action-button.js.map

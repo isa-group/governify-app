@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../services/GoogleService", '../services/languageService', 'angular2/http', './action-button.component'], function(exports_1, context_1) {
+System.register(['angular2/core', '../services/GoogleService', '../services/languageService', 'angular2/http', './action-button'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, GoogleService_1, languageService_1, http_1, action_button_component_1;
+    var core_1, GoogleService_1, languageService_1, http_1, action_button_1;
     var Editor;
     return {
         setters:[
@@ -26,8 +26,8 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
             function (http_1_1) {
                 http_1 = http_1_1;
             },
-            function (action_button_component_1_1) {
-                action_button_component_1 = action_button_component_1_1;
+            function (action_button_1_1) {
+                action_button_1 = action_button_1_1;
             }],
         execute: function() {
             Editor = (function () {
@@ -220,7 +220,7 @@ System.register(["angular2/core", "../services/GoogleService", '../services/lang
                         selector: 'editor',
                         templateUrl: 'templates/editor.html',
                         providers: [languageService_1.LanguageService, GoogleService_1.GoogleService],
-                        directives: [action_button_component_1.ActionButton]
+                        directives: [action_button_1.ActionButton]
                     }), 
                     __metadata('design:paramtypes', [http_1.Http, GoogleService_1.GoogleService, languageService_1.LanguageService])
                 ], Editor);
