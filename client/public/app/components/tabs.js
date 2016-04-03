@@ -1,4 +1,4 @@
-System.register(["angular2/core"], function(exports_1, context_1) {
+System.register(['angular2/core'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -30,6 +30,10 @@ System.register(["angular2/core"], function(exports_1, context_1) {
                     }
                     this.disabledTabsChange.emit(true);
                     this.selectedFormatChange.emit(newFormat);
+                };
+                Tabs.prototype.ngAfterViewInit = function () {
+                    $('ul.tabs').tabs();
+                    setTimeout(function () { return $(window).trigger('resize'); }, 0);
                 };
                 __decorate([
                     core_1.Input(), 

@@ -44,6 +44,7 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     var _this = this;
                     if (changes['language'] && typeof changes["language"].currentValue !== 'undefined') {
                         this.setEditorParameters(this.language.formats[0]);
+                        this.languagePath = this.config.languages[this.language.id];
                     }
                     if (changes['selectedFormat']) {
                         if (Object.keys(changes['selectedFormat'].previousValue).length > 0 && Object.keys(changes['selectedFormat'].currentValue).length > 0
@@ -67,11 +68,13 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                             _this._GS.loadDriveFile(_this.id).then(function (file) {
                                 _this.fileName = file.title;
                                 _this.fileNameChange.next(_this.fileName);
+                                _this.fileParents = file.parents;
                                 _this.fileExtension.next(file.fileExtension);
                                 _this._GS.getFileContent(file.downloadUrl)
                                     .map(function (res) { return res.text(); })
                                     .subscribe(function (content) {
-                                    _this.replaceEditorContent(content);
+                                    _this.fileContent = content;
+                                    _this.replaceEditorContent(_this.fileContent);
                                     _this.checkEditorLanguage();
                                     _this.setEditorHandlers();
                                 }, function (err) {
@@ -111,7 +114,7 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                 Editor.prototype.checkEditorLanguage = function () {
                     var _this = this;
                     return new Promise(function (resolve, reject) {
-                        _this._languageService.postCheckLanguage(_this.config.languages[_this.language.id], _this.formatSettings.format, _this.editor.getValue(), _this.fileName)
+                        _this._languageService.postCheckLanguage(_this.languagePath, _this.formatSettings.format, _this.editor.getValue(), _this.fileName)
                             .subscribe(function (data) {
                             _this.setAnnotations(data.annotations);
                             if (data.status === 'OK') {
@@ -131,7 +134,8 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                 };
                 Editor.prototype.setEditorHandlers = function () {
                     var _this = this;
-                    this.editor.on('change', function (content) {
+                    this.editor.on('change', function (ev) {
+                        _this.fileContent = _this.editor.getValue();
                         if (!_this.ignoreChangeAceEvent) {
                             if (_this.formatSettings.checkLanguage) {
                                 _this.checkEditorLanguage().then(function () {
@@ -152,9 +156,9 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                 };
                 Editor.prototype.convertLanguage = function (desiredFormat, oldFormatSettings) {
                     var _this = this;
-                    var langId = this.config.languages[this.language.id], content = this.editor.getValue();
+                    var content = this.editor.getValue();
                     if (!this.hasError) {
-                        this._languageService.convertLanguage(langId, oldFormatSettings, desiredFormat, content, this.fileName)
+                        this._languageService.convertLanguage(this.languagePath, oldFormatSettings, desiredFormat, content, this.fileName)
                             .subscribe(function (res) {
                             if (res.status == 'OK') {
                                 var content_1 = res.data;
@@ -165,7 +169,7 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                         });
                     }
                     else {
-                        console.log('Default format has errors!');
+                        Materialize.toast('Default format has errors!', 4000);
                     }
                 };
                 Editor.prototype.getFormatFromId = function (formatId) {
@@ -196,6 +200,10 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     __metadata('design:type', Object)
                 ], Editor.prototype, "config", void 0);
                 __decorate([
+                    core_1.Input(), 
+                    __metadata('design:type', Boolean)
+                ], Editor.prototype, "disabledTabs", void 0);
+                __decorate([
                     core_1.Output(), 
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "fileExtension", void 0);
@@ -204,17 +212,9 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "fileNameChange", void 0);
                 __decorate([
-                    core_1.Input(), 
-                    __metadata('design:type', Boolean)
-                ], Editor.prototype, "disabledTabs", void 0);
-                __decorate([
                     core_1.Output(), 
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "disabledTabsChange", void 0);
-                __decorate([
-                    core_1.Input(), 
-                    __metadata('design:type', String)
-                ], Editor.prototype, "fileName", void 0);
                 Editor = __decorate([
                     core_1.Component({
                         selector: 'editor',

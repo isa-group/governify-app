@@ -50,7 +50,22 @@ System.register(['angular2/core', 'angular2/http', "rxjs/Observable"], function(
                     var url = '/api/convert' + languageId;
                     var body = 'currentFormat=' + currentFormat +
                         '&desiredFormat=' + desiredFormat +
-                        '&fileUri=' + '' +
+                        '&fileUri=' + fileUri +
+                        '&content=' + encodeURIComponent(content);
+                    var headers = new http_1.Headers();
+                    headers.append('Content-Type', 'application/x-www-form-urlencoded');
+                    headers.append('accept', 'application/json');
+                    var options = {
+                        headers: headers
+                    };
+                    return this.http.post(url, body, options)
+                        .map(function (res) { return res.json(); })
+                        .catch(this.handleError);
+                };
+                LanguageService.prototype.executeOperation = function (languageId, operationId, content, fileUri) {
+                    var url = '/api/execute' + languageId + '/operation/' + operationId;
+                    var body = 'id=' + operationId +
+                        '&fileUri=' + fileUri +
                         '&content=' + encodeURIComponent(content);
                     var headers = new http_1.Headers();
                     headers.append('Content-Type', 'application/x-www-form-urlencoded');

@@ -96,7 +96,7 @@ System.register(['angular2/core', 'angular2/http'], function(exports_1, context_
                         });
                     });
                 };
-                GoogleService.prototype.saveFileToDrive = function (id, content) {
+                GoogleService.prototype.saveFileToDrive = function (id, content, callback) {
                     var request = gapi.client.request({
                         'path': '/upload/drive/v2/files/' + id,
                         'method': 'PUT',
@@ -108,6 +108,27 @@ System.register(['angular2/core', 'angular2/http'], function(exports_1, context_
                     });
                     request.execute(function (resp) {
                         console.log('content updated');
+                        if (callback)
+                            callback();
+                    });
+                };
+                GoogleService.prototype.uploadFileToDrive = function (content, fileName, parents) {
+                    var _this = this;
+                    return new Promise(function (resolve, reject) {
+                        gapi.client.load('drive', 'v2', function () {
+                            var request = gapi.client.request({
+                                'path': '/drive/v2/files',
+                                'method': 'POST',
+                                'body': {
+                                    "title": fileName,
+                                    "mimeType": "text/plain",
+                                    "parents": parents,
+                                }
+                            });
+                            request.execute(function (resp) {
+                                _this.saveFileToDrive(resp.id, content, function () { return resolve(); });
+                            });
+                        });
                     });
                 };
                 GoogleService = __decorate([

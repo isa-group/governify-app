@@ -11,7 +11,7 @@ import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
 import {LanguageService} from './services/languageService';
 import {GoogleService} from './services/GoogleService';
 import 'rxjs/Rx';
-import { IConfiguration, ILanguage, IFormat, IOperation, IUser} from './interfaces';
+import { IConfiguration, ILanguage, IFormat, IOperation} from './interfaces';
 import {Tabs} from './components/tabs';
 import {Editor} from './components/editor';
 
@@ -31,7 +31,7 @@ export class AppComponent {
     /**
      * Instance of the ACE editor.
      */
-    editor: any;
+    editor: AceAjax.Editor;
     /**
      * The app title that will hold the file name.
      * @type {string}
@@ -128,7 +128,6 @@ export class AppComponent {
         ]).then(() => {
             this.fileId = this.getUrlParameters('ids');
         });
-
     }
 
     getUrlParameters(param) {
@@ -163,8 +162,6 @@ export class AppComponent {
             this.extensions.push(f.format);
         }
         this.selectedFormat = this.extensions[0];
-        $('ul.tabs').tabs();
-        setTimeout(() => $(window).trigger('resize'), 100);
     }
 
     fileNameChangedEvent(fileName: string) {

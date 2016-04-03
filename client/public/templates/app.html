@@ -18,16 +18,19 @@
         </div>
     </nav>
 
+    <!--<div class="progress light-blue" style="margin:0;" >-->
+    <div class="progress light-blue" style="margin:0; bottom: 4px;" *ngIf="!loaded">
+        <div class="indeterminate white"></div>
+    </div>
 </div>
 
-<div class="progress light-blue" style="margin:0;" *ngIf="!loaded">
-    <div class="indeterminate white"></div>
-</div>
 
-<editor [id]="fileId"
-        [config] = "configuration"
-        [(selectedFormat)]="selectedFormat"
-        [language]="languageSettings"
-        (fileNameChange)="fileNameChangedEvent($event)"
-        (fileExtension)="extensionSelectedEvent($event)"
-        [(disabledTabs)]="disabledTabs"></editor>
+<editor
+    [id]="fileId"
+    [config] = "configuration"
+    [(selectedFormat)]="selectedFormat"
+    [language]="languageSettings"
+    (fileNameChange)="fileNameChangedEvent($event)"
+    (fileExtension)="extensionSelectedEvent($event)"
+    [(disabledTabs)]="disabledTabs">
+</editor>

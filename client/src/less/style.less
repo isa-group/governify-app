@@ -91,6 +91,25 @@ nav {
     transform: rotate(45deg);
 }
 
+#executeModal {
+    .modal-body,
+    .modal-subheader {
+        display:block;
+    }
+    .modal-spinner {
+        display: none;
+    }
+    &.spinner {
+        .modal-body,
+        .modal-subheader{
+            display:none;
+        }
+        .modal-spinner{
+            display: block;
+        }
+    }
+}
+
 span.op {
     right: 60px;
     position: absolute;

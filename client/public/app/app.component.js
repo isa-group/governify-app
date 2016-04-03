@@ -109,8 +109,6 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                         this.extensions.push(f.format);
                     }
                     this.selectedFormat = this.extensions[0];
-                    $('ul.tabs').tabs();
-                    setTimeout(function () { return $(window).trigger('resize'); }, 100);
                 };
                 AppComponent.prototype.fileNameChangedEvent = function (fileName) {
                     this.fileName = fileName;

@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var querystring = require('querystring');
 var https = require('https');
-var fs = require('fs');
 var path = require('path');
 
 router.get('/configuration', function(req, res, next) {
@@ -31,7 +30,7 @@ router.get('/configuration', function(req, res, next) {
 		},
 		"baseURI": "https://labs.isa.us.es:8181/"
 	};
-    
+
     res.json(oJSON);
 });
 
@@ -98,6 +97,41 @@ router.post('/convert/:language', function(req, res, next) {
 			host: 'labs.isa.us.es',
 			port: 8181,
 			path: '/' + req.params.language+ "/language/convert",
+			method: 'POST',
+			rejectUnauthorized: false,
+			headers: req.headers
+		},
+		request = https.request(options, function (response) {
+			var result='';
+
+			response.on('data', function (d) {
+				result += d.toString();
+			});
+
+			response.on('end', function(){
+				try {
+					var data = JSON.parse(result);
+					res.json(data);
+				} catch (e) {
+					console.error(e);
+				}
+			});
+		});
+
+	request.on('error', function (e) {
+		console.error(e);
+	});
+
+	request.write(data);
+	request.end();
+});
+
+router.post('/execute/:language/operation/:operation', function(req, res, next) {
+	var data = querystring.stringify(req.body),
+		options = {
+			host: 'labs.isa.us.es',
+			port: 8181,
+			path: '/' + req.params.language + '/language/operation/' + req.params.operation + '/execute',
 			method: 'POST',
 			rejectUnauthorized: false,
 			headers: req.headers

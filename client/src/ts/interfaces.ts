@@ -12,7 +12,6 @@ export interface IConfiguration {
     baseURI: string
 }
 
-
 // language services
 export interface ILanguage {
     id: string;
@@ -43,14 +42,7 @@ export interface IOperation {
     action: string;
 }
 
-
-export interface IUser {
-    email: string;
-    displayName: string;
-    picture?: string;
-}
-
-export interface IAnnotations {
+export interface ILanguageResponse {
     annotations: any[];
     context: any;
     customStruct: any;

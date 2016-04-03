@@ -98,7 +98,7 @@ export class GoogleService {
         });
     }
 
-    saveFileToDrive(id: string, content: string) {
+    saveFileToDrive(id: string, content: string, callback?) {
         var request = gapi.client.request({
             'path': '/upload/drive/v2/files/' + id,
             'method': 'PUT',
@@ -112,8 +112,30 @@ export class GoogleService {
         request.execute(
             (resp) => {
                 console.log('content updated');
+                if (callback) callback();
             }
         );
+    }
+
+    uploadFileToDrive(content: string, fileName:string, parents: string[]){
+        return new Promise((resolve, reject) => {
+            gapi.client.load('drive', 'v2', () => {
+                let request = gapi.client.request({
+                    'path': '/drive/v2/files',
+                    'method': 'POST',
+                    'body':{
+                        "title" : fileName,
+                        "mimeType" : "text/plain",
+                        "parents": parents,
+                    }
+                });
+                request.execute(
+                    (resp) => {
+                        this.saveFileToDrive(resp.id, content, () => resolve());
+                    }
+                );
+            });
+        });
     }
 
 }

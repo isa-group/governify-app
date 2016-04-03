@@ -1,4 +1,10 @@
 <div id="editor" data-id="id"></div>
-<span *ngIf="language">
-	<action-button [operations]='language.operations'></action-button>
+<span *ngIf="language && language.formats[0].format == selectedFormat">
+    <action-button
+        [operations]="language.operations"
+        [languagePath]="languagePath"
+        [fileContent]="fileContent"
+        [fileUri]="fileName"
+        [fileParents]="fileParents">
+    </action-button>
 </span>

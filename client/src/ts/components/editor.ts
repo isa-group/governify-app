@@ -7,8 +7,9 @@ import {Component, Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter}
 import {GoogleService} from '../services/GoogleService';
 import {LanguageService} from '../services/languageService';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
-import {ILanguage, IFormat, IOperation, IConfiguration, IAnnotations} from '../interfaces';
+import {ILanguage, IFormat, IOperation, IConfiguration, ILanguageResponse} from '../interfaces';
 import {ActionButton} from './action-button';
+
 
 @Component({
     selector: 'editor',
@@ -17,27 +18,103 @@ import {ActionButton} from './action-button';
 	directives: [ActionButton]
 })
 export class Editor implements OnChanges {
+    /**
+     * The file id needed for retrieving the file content.
+     * @type {string}
+     */
     @Input() id: string;
+    /**
+     * Define the selected tab from [Tabs] web component.
+     * @type {string}
+     */
     @Input() selectedFormat: string;
+    /**
+     * Language of the loaded file.
+     * @type {ILanguage}
+     */
     @Input() language: ILanguage;
+    /**
+     * Initial app configuration containing the manifests of all the [languages].
+     * @type {IConfiguration}
+     */
     @Input() config: IConfiguration;
-    @Output() fileExtension: EventEmitter<string> = new EventEmitter<string>();
-    @Output() fileNameChange: EventEmitter<string> = new EventEmitter<string>();
+    /**
+     * Whether the tabs are disabled.
+     * @type {boolean}
+     */
     @Input() disabledTabs: boolean;
+     /**
+     * EventEmitter to emit the changes in file extension.
+     * @type {EventEmitter}
+     */
+    @Output() fileExtension: EventEmitter<string> = new EventEmitter<string>();
+     /**
+     * EventEmitter to emit the changes in the file name.
+     * @type {EventEmitter}
+     */
+    @Output() fileNameChange: EventEmitter<string> = new EventEmitter<string>();
+    /**
+     * EventEmitter to emit the changes in disabledTabs.
+     * @type {EventEmitter}
+     */
     @Output() disabledTabsChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+     /**
+     * File name.
+     * @type {string}
+     */
+    fileName: string;
+     /**
+     * The editor itself.
+     * @type {AceAjax.Editor}
+     */
     editor: AceAjax.Editor;
+    /**
+     * Timeout function to manage whether to save the file content on content changes.
+     * @type {function}
+     */
     saveTimeout;
-    @Input() fileName: string;
+    /**
+     * Editor content at any time.
+     * @type {string}
+     */
+    fileContent: string;
+    /**
+     * Current format selected in tabs and content format inside the editor.
+     * @type {IFormat}
+     */
     formatSettings: IFormat;
+    /**
+     * Old format selected in tabs and content format inside the editor.
+     * @type {IFormat}
+     */
     oldFormatSettings: IFormat;
+    /**
+     * Whether the content has an error.
+     * @type {boolean}
+     */
     hasError: boolean;
+    /**
+     * A flag to prevent content to be save to drive on a change caused by a format change.
+     * @type {boolean}
+     */
     ignoreChangeAceEvent: boolean = false;
+    /**
+     * Language path for the file language.
+     * @type {string}
+     */
+    languagePath: string;
+    /**
+     * Google drive parents of the file.
+     * @type {Array<string>}
+     */
+    fileParents: string[];
 
     constructor(public http: Http, private _GS: GoogleService, private _languageService: LanguageService) {}
 
     ngOnChanges(changes: {[propName: string]: SimpleChange}) {
         if (changes['language'] && typeof changes["language"].currentValue !== 'undefined') {
             this.setEditorParameters(this.language.formats[0]);
+            this.languagePath = this.config.languages[this.language.id];
         }
 
         if (changes['selectedFormat']) {
@@ -64,12 +141,14 @@ export class Editor implements OnChanges {
                         (file:Object) => {
                             this.fileName = file.title;
                             this.fileNameChange.next(this.fileName);
+                            this.fileParents = file.parents;
                             this.fileExtension.next(file.fileExtension);
                             this._GS.getFileContent(file.downloadUrl)
                                 .map(res => res.text())
                                 .subscribe(
                                     (content) => {
-                                        this.replaceEditorContent(content);
+                                        this.fileContent = content;
+                                        this.replaceEditorContent(this.fileContent);
                                         this.checkEditorLanguage();
                                         this.setEditorHandlers();
                                     },
@@ -85,17 +164,17 @@ export class Editor implements OnChanges {
         }
     }
 
-
     initAce() {
         this.editor = ace.edit("editor");
 
-        //Remove 80character vertical line
+        //Remove 80-character vertical line
         this.editor.setShowPrintMargin(false);
     }
 
-    setAnnotations(annotations) {
+    setAnnotations(annotations: AceAjax.Annotation[]) {
         this.editor.getSession().setAnnotations(annotations);
     }
+
 
     replaceEditorContent(newContent: string) {
         this.ignoreChangeAceEvent = true;
@@ -122,9 +201,9 @@ export class Editor implements OnChanges {
 
     checkEditorLanguage() : Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this._languageService.postCheckLanguage(this.config.languages[this.language.id], this.formatSettings.format, this.editor.getValue(), this.fileName)
+            this._languageService.postCheckLanguage(this.languagePath, this.formatSettings.format, this.editor.getValue(), this.fileName)
                 .subscribe(
-                    (data: IAnnotations) => {
+                    (data: ILanguageResponse) => {
                         this.setAnnotations(data.annotations);
                         if (data.status === 'OK'){
                             this.hasError = false;
@@ -144,7 +223,8 @@ export class Editor implements OnChanges {
     }
 
     setEditorHandlers() {
-        this.editor.on('change', (content) => {
+        this.editor.on('change', (ev: AceAjax.EditorChangeEvent) => {
+            this.fileContent = this.editor.getValue();
             if (!this.ignoreChangeAceEvent) {
                 if (this.formatSettings.checkLanguage) {
                     this.checkEditorLanguage().then(() => {
@@ -168,13 +248,12 @@ export class Editor implements OnChanges {
     }
 
     convertLanguage(desiredFormat: string, oldFormatSettings: string){
-        let langId = this.config.languages[this.language.id],
-            content = this.editor.getValue();
+        let content = this.editor.getValue();
 
         if(!this.hasError /*&& content !== null && content !== ""*/) {
-            this._languageService.convertLanguage(langId, oldFormatSettings, desiredFormat, content, this.fileName)
+            this._languageService.convertLanguage(this.languagePath, oldFormatSettings, desiredFormat, content, this.fileName)
                 .subscribe(
-                    (res: IAnnotations) => {
+                    (res: ILanguageResponse) => {
                         if(res.status == 'OK'){
                             let content = res.data;
                             this.replaceEditorContent(content);
@@ -185,7 +264,7 @@ export class Editor implements OnChanges {
                     }
                 )
         }else{
-            console.log('Default format has errors!');
+            Materialize.toast('Default format has errors!', 4000);
         }
     }
 
