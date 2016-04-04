@@ -69,11 +69,6 @@ export class Editor implements OnChanges {
      */
     editor: AceAjax.Editor;
     /**
-     * Timeout function to manage whether to save the file content on content changes.
-     * @type {function}
-     */
-    saveTimeout;
-    /**
      * Editor content at any time.
      * @type {string}
      */
@@ -171,11 +166,6 @@ export class Editor implements OnChanges {
         this.editor.setShowPrintMargin(false);
     }
 
-    setAnnotations(annotations: AceAjax.Annotation[]) {
-        this.editor.getSession().setAnnotations(annotations);
-    }
-
-
     replaceEditorContent(newContent: string) {
         this.ignoreChangeAceEvent = true;
         this.editor.setValue(newContent, -1);
@@ -204,7 +194,7 @@ export class Editor implements OnChanges {
             this._languageService.postCheckLanguage(this.languagePath, this.formatSettings.format, this.editor.getValue(), this.fileName)
                 .subscribe(
                     (data: ILanguageResponse) => {
-                        this.setAnnotations(data.annotations);
+                        this.editor.getSession().setAnnotations(data.annotations);
                         if (data.status === 'OK'){
                             this.hasError = false;
                             this.disabledTabsChange.emit(false);
@@ -223,17 +213,18 @@ export class Editor implements OnChanges {
     }
 
     setEditorHandlers() {
+        let saveTimeout;
         this.editor.on('change', (ev: AceAjax.EditorChangeEvent) => {
             this.fileContent = this.editor.getValue();
             if (!this.ignoreChangeAceEvent) {
                 if (this.formatSettings.checkLanguage) {
                     this.checkEditorLanguage().then(() => {
                         if (!this.hasError) {
-                            if (this.saveTimeout !== null) {
-                                clearTimeout(this.saveTimeout);
+                            if (saveTimeout !== null) {
+                                clearTimeout(saveTimeout);
                             }
 
-                            this.saveTimeout = setTimeout(() => {
+                            saveTimeout = setTimeout(() => {
                                 this._GS.saveFileToDrive(this.id, this.editor.getValue());
                             }, 2000);
                         }

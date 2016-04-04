@@ -77,27 +77,6 @@ export class GoogleService {
         return  this.http.get(downloadUrl, {headers: this.headers});
     }
 
-    getUserInfo(userId: any) {
-        return new Promise((resolve, reject) => {
-            let user: User;
-            this.gapi.client.load('plus', 'v1').then(() => {
-                let request = this.gapi.client.plus.people.get({
-                    'userId': userId
-                });
-
-                request.execute((resp) => {
-                    user = {
-                        email: resp.emails[0].value,
-                        displayName: resp.displayName,
-                        picture: resp.image.url
-                    };
-
-                    resolve(user);
-                });
-            });
-        });
-    }
-
     saveFileToDrive(id: string, content: string, callback?) {
         var request = gapi.client.request({
             'path': '/upload/drive/v2/files/' + id,

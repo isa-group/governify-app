@@ -88,9 +88,6 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     this.editor = ace.edit("editor");
                     this.editor.setShowPrintMargin(false);
                 };
-                Editor.prototype.setAnnotations = function (annotations) {
-                    this.editor.getSession().setAnnotations(annotations);
-                };
                 Editor.prototype.replaceEditorContent = function (newContent) {
                     this.ignoreChangeAceEvent = true;
                     this.editor.setValue(newContent, -1);
@@ -116,7 +113,7 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     return new Promise(function (resolve, reject) {
                         _this._languageService.postCheckLanguage(_this.languagePath, _this.formatSettings.format, _this.editor.getValue(), _this.fileName)
                             .subscribe(function (data) {
-                            _this.setAnnotations(data.annotations);
+                            _this.editor.getSession().setAnnotations(data.annotations);
                             if (data.status === 'OK') {
                                 _this.hasError = false;
                                 _this.disabledTabsChange.emit(false);
@@ -134,16 +131,17 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                 };
                 Editor.prototype.setEditorHandlers = function () {
                     var _this = this;
+                    var saveTimeout;
                     this.editor.on('change', function (ev) {
                         _this.fileContent = _this.editor.getValue();
                         if (!_this.ignoreChangeAceEvent) {
                             if (_this.formatSettings.checkLanguage) {
                                 _this.checkEditorLanguage().then(function () {
                                     if (!_this.hasError) {
-                                        if (_this.saveTimeout !== null) {
-                                            clearTimeout(_this.saveTimeout);
+                                        if (saveTimeout !== null) {
+                                            clearTimeout(saveTimeout);
                                         }
-                                        _this.saveTimeout = setTimeout(function () {
+                                        saveTimeout = setTimeout(function () {
                                             _this._GS.saveFileToDrive(_this.id, _this.editor.getValue());
                                         }, 2000);
                                     }

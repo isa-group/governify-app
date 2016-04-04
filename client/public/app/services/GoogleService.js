@@ -77,25 +77,6 @@ System.register(['angular2/core', 'angular2/http'], function(exports_1, context_
                 GoogleService.prototype.getFileContent = function (downloadUrl) {
                     return this.http.get(downloadUrl, { headers: this.headers });
                 };
-                GoogleService.prototype.getUserInfo = function (userId) {
-                    var _this = this;
-                    return new Promise(function (resolve, reject) {
-                        var user;
-                        _this.gapi.client.load('plus', 'v1').then(function () {
-                            var request = _this.gapi.client.plus.people.get({
-                                'userId': userId
-                            });
-                            request.execute(function (resp) {
-                                user = {
-                                    email: resp.emails[0].value,
-                                    displayName: resp.displayName,
-                                    picture: resp.image.url
-                                };
-                                resolve(user);
-                            });
-                        });
-                    });
-                };
                 GoogleService.prototype.saveFileToDrive = function (id, content, callback) {
                     var request = gapi.client.request({
                         'path': '/upload/drive/v2/files/' + id,

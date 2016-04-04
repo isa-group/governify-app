@@ -24,15 +24,7 @@ import {Editor} from './components/editor';
 })
 export class AppComponent {
     /**
-     * The logged user's information. Contains the user's avatar and contact info.
-     * @type {IUser}
-     */
-    user: IUser;
-    /**
-     * Instance of the ACE editor.
-     */
-    editor: AceAjax.Editor;
-    /**
+     *
      * The app title that will hold the file name.
      * @type {string}
      */
@@ -130,7 +122,7 @@ export class AppComponent {
         });
     }
 
-    getUrlParameters(param) {
+    getUrlParameters(param: string) {
         let result = null,
             query = window.location.search,
             map: Object = {};
