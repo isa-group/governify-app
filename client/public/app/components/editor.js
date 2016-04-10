@@ -39,6 +39,8 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     this.fileNameChange = new core_1.EventEmitter();
                     this.disabledTabsChange = new core_1.EventEmitter();
                     this.ignoreChangeAceEvent = false;
+                    this.initModal = new core_1.EventEmitter();
+                    this.updateModal = new core_1.EventEmitter();
                 }
                 Editor.prototype.ngOnChanges = function (changes) {
                     var _this = this;
@@ -213,6 +215,14 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     core_1.Output(), 
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "disabledTabsChange", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Editor.prototype, "initModal", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Editor.prototype, "updateModal", void 0);
                 Editor = __decorate([
                     core_1.Component({
                         selector: 'editor',

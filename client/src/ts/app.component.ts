@@ -6,7 +6,7 @@
 /// <reference path="./d/gapi.d.ts" />
 /// <reference path="./d/jquery.d.ts" />
 
-import {Component} from 'angular2/core';
+import {Component, OnInit} from 'angular2/core';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
 import {LanguageService} from './services/languageService';
 import {GoogleService} from './services/GoogleService';
@@ -14,6 +14,7 @@ import 'rxjs/Rx';
 import { IConfiguration, ILanguage, IFormat, IOperation} from './interfaces';
 import {Tabs} from './components/tabs';
 import {Editor} from './components/editor';
+import {Modal, ModalOptions, ModalButton} from './modal';
 
 
 @Component({
@@ -22,7 +23,7 @@ import {Editor} from './components/editor';
     directives: [Tabs, Editor],
     providers: [GoogleService]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     /**
      *
      * The app title that will hold the file name.
@@ -76,8 +77,10 @@ export class AppComponent {
      * @type {boolean}
      */
     disabledTabs: boolean = false;
+    modal: Modal;
 
-    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {
+    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) { }
+    ngOnInit(){
         $('body').removeClass('unresolved');
 
         this.languages = {};
@@ -161,4 +164,29 @@ export class AppComponent {
         this.loaded = true;
     }
 
+
+    initModal(options: ModalOptions){
+        console.log('capturado evento INITmodal en appcomponent');
+        console.log(options);
+        if (!this.modal)
+            this.modal = new Modal(options, $('#Modal'))
+        else
+            this.modal.setModal(options);
+        this.modal.open();
+    }
+
+    updateModal([options, error]: [ModalOptions, boolean]){
+        console.log('capturado evento UPDATEmodal en appcomponent');
+        console.log(options);
+        console.log(error);
+        if (error)
+            this.modal.setErrorMode();
+        else
+            this.modal.setSuccessMode();
+        this.modal.updateContent(options.loadingIndicator, options.header, options.content, options.subheader);
+    }
+
+    print(event){
+        console.log('en appcomponent');
+    }
 }

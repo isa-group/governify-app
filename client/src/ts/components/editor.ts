@@ -9,7 +9,7 @@ import {LanguageService} from '../services/languageService';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
 import {ILanguage, IFormat, IOperation, IConfiguration, ILanguageResponse} from '../interfaces';
 import {ActionButton} from './action-button';
-
+import {ModalOptions} from '../modal';
 
 @Component({
     selector: 'editor',
@@ -103,6 +103,9 @@ export class Editor implements OnChanges {
      * @type {Array<string>}
      */
     fileParents: string[];
+
+    @Output() initModal: EventEmitter<ModalOptions> = new EventEmitter();
+    @Output() updateModal: EventEmitter<[ModalOptions, boolean]> = new EventEmitter();
 
     constructor(public http: Http, private _GS: GoogleService, private _languageService: LanguageService) {}
 

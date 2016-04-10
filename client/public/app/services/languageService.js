@@ -34,7 +34,7 @@ System.register(['angular2/core', 'angular2/http', "rxjs/Observable"], function(
                         .catch(this.handleError);
                 };
                 LanguageService.prototype.postCheckLanguage = function (languageId, format, content, fileUri) {
-                    var url = '/api/checkLanguage' + languageId + "/format/" + format;
+                    var url = '/api/language' + languageId + "/format/" + format + '/checkLanguage';
                     var body = 'id=' + format + '&content=' + encodeURIComponent(content) + '&fileUri=' + fileUri;
                     var headers = new http_1.Headers();
                     headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');

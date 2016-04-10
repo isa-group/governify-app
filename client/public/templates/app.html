@@ -26,6 +26,8 @@
 
 
 <editor
+    (initModal)='initModal($event)'
+    (updateModal)='updateModal($event)'
     [id]="fileId"
     [config] = "configuration"
     [(selectedFormat)]="selectedFormat"
@@ -34,3 +36,30 @@
     (fileExtension)="extensionSelectedEvent($event)"
     [(disabledTabs)]="disabledTabs">
 </editor>
+
+<div id="Modal" class="modal">
+    <div class="modal-content">
+        <h4 class="modal-header"></h4>
+        <div class="modal-subheader">
+        </div>
+        <div class="modal-spinner center">
+            <div class="preloader-wrapper small active center">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-body"></div>
+    </div>
+    <div class="modal-footer">
+        <a class="modal-action modal-close btn-flat blue-text">Close</a>
+    </div>
+</div>

@@ -1,6 +1,8 @@
 <div id="editor" data-id="id"></div>
-<span *ngIf="language && language.formats[0].format == selectedFormat">
+<span *ngIf="language && language.operations && language.formats[0].format == selectedFormat">
     <action-button
+        (initModal)='initModal.emit($event)'
+        (updateModal)='updateModal.emit($event)'
         [operations]="language.operations"
         [languagePath]="languagePath"
         [fileContent]="fileContent"

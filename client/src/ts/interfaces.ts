@@ -43,7 +43,7 @@ export interface IOperation {
 }
 
 export interface ILanguageResponse {
-    annotations: any[];
+    annotations: AceAjax.Annotation[];
     context: any;
     customStruct: any;
     data: any;

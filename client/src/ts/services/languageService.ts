@@ -19,7 +19,7 @@ export class LanguageService {
     }
 
     postCheckLanguage(languageId: string, format: string, content: string, fileUri: string){
-        let url = '/api/checkLanguage' + languageId + "/format/" + format;
+        let url = '/api/language' + languageId + "/format/" + format + '/checkLanguage';
         let body = 'id='+format+'&content='+encodeURIComponent(content)+'&fileUri='+fileUri;
         let headers = new Headers();
             headers.append('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');

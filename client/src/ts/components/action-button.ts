@@ -7,7 +7,9 @@ import {Component, Input, Output, SimpleChange, EventEmitter} from 'angular2/cor
 import {IOperation, ILanguageResponse} from '../interfaces';
 import {LanguageService} from  '../services/languageService';
 import {GoogleService} from  '../services/GoogleService';
-import {RemoteOperationsOnly} from '../pipes/remoteOperationsOnly'
+import {RemoteOperationsOnly} from '../pipes/remoteOperationsOnly';
+import {ModalOptions, ModalButton} from '../modal';
+
 
 @Component({
     selector: 'action-button',
@@ -21,6 +23,8 @@ export class ActionButton {
     @Input() fileContent: string;
     @Input() fileUri: string;
     @Input() fileParents: string[];
+    @Output() initModal: EventEmitter<ModalOptions> = new EventEmitter();
+    @Output() updateModal: EventEmitter<[ModalOptions, boolean]> = new EventEmitter();
 
     iconMap: Object = {
         "CheckCompliance": "assignment_turned_in",
@@ -72,30 +76,55 @@ export class ActionButton {
                 break;
             }
         }
-
-        this.initModal(true, operationName);
+        console.log('emit initmodal')
+        this.initModal.emit({header:operationName, loadingIndicator:true});
         this._languageService.executeOperation(this.languagePath, operationId, this.fileContent, this.fileUri)
             .subscribe(
                 (res: ILanguageResponse) => {
+                    let options : ModalOptions = {
+                        header: operationName,
+                        content: res.message,
+                        subheader: '',
+                        loadingIndicator: false
+                    };
                     if(res.status != 'OK_PROBLEMS' && res.status != "ERROR") {
-                        let subheader;
+                        let subheader: string;
                         if (res.fileUri && res.fileUri !== "") {
-                            subheader = "File: " + res.fileUri;
+                            options.subheader = "File: " + res.fileUri;
                         }
 
                         if(generativeOperations.indexOf(operationId) > -1){
                             this._GS.uploadFileToDrive(res.data, res.fileUri, this.fileParents)
                                 .then(
                                     () =>{
-                                        this.replaceModalContentSuccess(false, operationName, res.message, subheader);
+                                        let options: ModalOptions = {
+                                            header: operationName,
+                                            subheader: subheader,
+                                            content: res.message,
+                                            loadingIndicator: false
+                                        }
+                                        console.log('emit updatemodal')
+                                        this.updateModal.emit([options, false]);
+
+                                        // this.replaceModalContentSuccess(false, operationName, res.message, subheader);
                                     }
                                 );
                         } else {
-                            this.replaceModalContentSuccess(false, operationName, res.message, subheader);
+                            let options: ModalOptions = {
+                                header: operationName,
+                                subheader: subheader,
+                                content: res.message,
+                                loadingIndicator: false
+                            }
+                            console.log('emit updatemodal')
+                            this.updateModal.emit([options, false]);
+                            // this.replaceModalContentSuccess(false, operationName, res.message, subheader);
                         }
                     } else {
-                        if (!res.message || res.message == "") res.message = "An error has happened.";
-                        this.replaceModalContentError(false, operationName, res.message);
+                        if (!res.message || res.message == "") options.content = "An error has happened.";
+                        console.log('emit updatemodal')
+                        this.updateModal.emit([options, true]);
+                        // this.replaceModalContentError(false, operationName, res.message);
                     }
                 },
                 (err) => {
@@ -104,41 +133,4 @@ export class ActionButton {
             );
     }
 
-    initModal(spinner: boolean, header?: string, content?: string, subheader?: string){
-        this.replaceModalContentSuccess(spinner, header, content, subheader);
-        this.$modal.openModal({
-            dismissible: false
-        });
-    }
-
-    replaceModalContentSuccess(spinner: boolean, header?: string, content?: string, subheader?: string){
-        this.$modal.find('.modal-content .modal-body').removeClass("red-text");
-        this.replaceModalContent(spinner, header, content, subheader);
-    }
-
-    replaceModalContentError(spinner: boolean, header?: string, content?: string, subheader?: string){
-        this.$modal.find('.modal-content .modal-body').addClass("red-text");
-        this.replaceModalContent(spinner, header, content, subheader);
-    }
-
-    replaceModalContent(spinner: boolean, header?: string, content?: string, subheader?: string) {
-        if (!header) header = "";
-        if (!content) content = "";
-        if (!subheader) subheader = "";
-
-        if(spinner === true){
-            this.$modal.addClass('spinner');
-        } else {
-            this.$modal.removeClass('spinner');
-        }
-
-        if (content){
-            content = content.replace(/<.*?>/g, '');
-        }
-
-        this.$modal.find('.modal-content .modal-header').html(header);
-        this.$modal.find('.modal-content .modal-subheader').html(subheader);
-        this.$modal.find('.modal-content .modal-body').html(content);
-
-    }
 }

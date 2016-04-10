@@ -1,4 +1,4 @@
-System.register(['angular2/core', 'angular2/http', './services/languageService', './services/GoogleService', 'rxjs/Rx', './components/tabs', './components/editor'], function(exports_1, context_1) {
+System.register(['angular2/core', 'angular2/http', './services/languageService', './services/GoogleService', 'rxjs/Rx', './components/tabs', './components/editor', './modal'], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -10,7 +10,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1, languageService_1, GoogleService_1, tabs_1, editor_1;
+    var core_1, http_1, languageService_1, GoogleService_1, tabs_1, editor_1, modal_1;
     var AppComponent;
     return {
         setters:[
@@ -32,11 +32,13 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
             },
             function (editor_1_1) {
                 editor_1 = editor_1_1;
+            },
+            function (modal_1_1) {
+                modal_1 = modal_1_1;
             }],
         execute: function() {
             AppComponent = (function () {
                 function AppComponent(http, _languageService, _GS) {
-                    var _this = this;
                     this.http = http;
                     this._languageService = _languageService;
                     this._GS = _GS;
@@ -45,6 +47,9 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.selectedFormat = '';
                     this.extensions = [''];
                     this.disabledTabs = false;
+                }
+                AppComponent.prototype.ngOnInit = function () {
+                    var _this = this;
                     $('body').removeClass('unresolved');
                     this.languages = {};
                     var getConfigLang = new Promise(function (resolve, reject) {
@@ -78,7 +83,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     ]).then(function () {
                         _this.fileId = _this.getUrlParameters('ids');
                     });
-                }
+                };
                 AppComponent.prototype.getUrlParameters = function (param) {
                     var result = null, query = window.location.search, map = {};
                     if (param === null || query === '') {
@@ -113,6 +118,29 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                 AppComponent.prototype.fileNameChangedEvent = function (fileName) {
                     this.fileName = fileName;
                     this.loaded = true;
+                };
+                AppComponent.prototype.initModal = function (options) {
+                    console.log('capturado evento INITmodal en appcomponent');
+                    console.log(options);
+                    if (!this.modal)
+                        this.modal = new modal_1.Modal(options, $('#Modal'));
+                    else
+                        this.modal.setModal(options);
+                    this.modal.open();
+                };
+                AppComponent.prototype.updateModal = function (_a) {
+                    var options = _a[0], error = _a[1];
+                    console.log('capturado evento UPDATEmodal en appcomponent');
+                    console.log(options);
+                    console.log(error);
+                    if (error)
+                        this.modal.setErrorMode();
+                    else
+                        this.modal.setSuccessMode();
+                    this.modal.updateContent(options.loadingIndicator, options.header, options.content, options.subheader);
+                };
+                AppComponent.prototype.print = function (event) {
+                    console.log('en appcomponent');
                 };
                 AppComponent = __decorate([
                     core_1.Component({

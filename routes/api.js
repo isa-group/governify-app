@@ -60,7 +60,7 @@ router.get('/language/:languagePath', function(req, res, next) {
 	request.end();
 });
 
-router.post('/checklanguage/:language/format/:format', function(req, res, next) {
+router.post('/language/:language/format/:format/checkLanguage', function(req, res, next) {
 	var data = querystring.stringify(req.body),
 		headers = req.headers,
 		options = {

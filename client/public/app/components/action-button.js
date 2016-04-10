@@ -31,6 +31,8 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                 function ActionButton(_GS, _languageService) {
                     this._GS = _GS;
                     this._languageService = _languageService;
+                    this.initModal = new core_1.EventEmitter();
+                    this.updateModal = new core_1.EventEmitter();
                     this.iconMap = {
                         "CheckCompliance": "assignment_turned_in",
                         "checkComplianceAuto": "assignment_turned_in",
@@ -74,66 +76,54 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                             break;
                         }
                     }
-                    this.initModal(true, operationName);
+                    console.log('emit initmodal');
+                    this.initModal.emit({ header: operationName, loadingIndicator: true });
                     this._languageService.executeOperation(this.languagePath, operationId, this.fileContent, this.fileUri)
                         .subscribe(function (res) {
+                        var options = {
+                            header: operationName,
+                            content: res.message,
+                            subheader: '',
+                            loadingIndicator: false
+                        };
                         if (res.status != 'OK_PROBLEMS' && res.status != "ERROR") {
                             var subheader_1;
                             if (res.fileUri && res.fileUri !== "") {
-                                subheader_1 = "File: " + res.fileUri;
+                                options.subheader = "File: " + res.fileUri;
                             }
                             if (generativeOperations.indexOf(operationId) > -1) {
                                 _this._GS.uploadFileToDrive(res.data, res.fileUri, _this.fileParents)
                                     .then(function () {
-                                    _this.replaceModalContentSuccess(false, operationName, res.message, subheader_1);
+                                    var options = {
+                                        header: operationName,
+                                        subheader: subheader_1,
+                                        content: res.message,
+                                        loadingIndicator: false
+                                    };
+                                    console.log('emit updatemodal');
+                                    _this.updateModal.emit([options, false]);
                                 });
                             }
                             else {
-                                _this.replaceModalContentSuccess(false, operationName, res.message, subheader_1);
+                                var options_1 = {
+                                    header: operationName,
+                                    subheader: subheader_1,
+                                    content: res.message,
+                                    loadingIndicator: false
+                                };
+                                console.log('emit updatemodal');
+                                _this.updateModal.emit([options_1, false]);
                             }
                         }
                         else {
                             if (!res.message || res.message == "")
-                                res.message = "An error has happened.";
-                            _this.replaceModalContentError(false, operationName, res.message);
+                                options.content = "An error has happened.";
+                            console.log('emit updatemodal');
+                            _this.updateModal.emit([options, true]);
                         }
                     }, function (err) {
                         console.error(err);
                     });
-                };
-                ActionButton.prototype.initModal = function (spinner, header, content, subheader) {
-                    this.replaceModalContentSuccess(spinner, header, content, subheader);
-                    this.$modal.openModal({
-                        dismissible: false
-                    });
-                };
-                ActionButton.prototype.replaceModalContentSuccess = function (spinner, header, content, subheader) {
-                    this.$modal.find('.modal-content .modal-body').removeClass("red-text");
-                    this.replaceModalContent(spinner, header, content, subheader);
-                };
-                ActionButton.prototype.replaceModalContentError = function (spinner, header, content, subheader) {
-                    this.$modal.find('.modal-content .modal-body').addClass("red-text");
-                    this.replaceModalContent(spinner, header, content, subheader);
-                };
-                ActionButton.prototype.replaceModalContent = function (spinner, header, content, subheader) {
-                    if (!header)
-                        header = "";
-                    if (!content)
-                        content = "";
-                    if (!subheader)
-                        subheader = "";
-                    if (spinner === true) {
-                        this.$modal.addClass('spinner');
-                    }
-                    else {
-                        this.$modal.removeClass('spinner');
-                    }
-                    if (content) {
-                        content = content.replace(/<.*?>/g, '');
-                    }
-                    this.$modal.find('.modal-content .modal-header').html(header);
-                    this.$modal.find('.modal-content .modal-subheader').html(subheader);
-                    this.$modal.find('.modal-content .modal-body').html(content);
                 };
                 __decorate([
                     core_1.Input(), 
@@ -155,6 +145,14 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                     core_1.Input(), 
                     __metadata('design:type', Array)
                 ], ActionButton.prototype, "fileParents", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], ActionButton.prototype, "initModal", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], ActionButton.prototype, "updateModal", void 0);
                 ActionButton = __decorate([
                     core_1.Component({
                         selector: 'action-button',
