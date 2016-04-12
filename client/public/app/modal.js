@@ -58,9 +58,10 @@ System.register([], function(exports_1, context_1) {
                         this.$modal.find('.modal-footer').empty();
                     }
                     this.buttons.forEach(function (button) {
-                        var $button = $($('div'));
-                        var classes = button.type === 'flat' ? 'btn-flat' : 'btn';
-                        $button.addClass('modal-action modal-close ' + classes + button.class);
+                        var $button = $($('<div>', {
+                            'class': 'modal-action modal-close ' + (button.type === 'flat' ? 'btn-flat blue-text' : 'btn white-text') + ' ' + (button.class ? button.class : ''),
+                            'text': button.text
+                        }));
                         $button.on('click', function () {
                             button.click();
                         });

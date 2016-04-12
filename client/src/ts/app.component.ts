@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
      * True when the application has loaded all the initial components.
      * @type {boolean}
      */
-    loaded: boolean = false;
+    loading: boolean = true;
     /**
      * Initial app configuration containing the manifests of all the [languages].
      * @type {IConfiguration}
@@ -161,7 +161,6 @@ export class AppComponent implements OnInit {
 
     fileNameChangedEvent(fileName: string) {
         this.fileName = fileName;
-        this.loaded = true;
     }
 
 
@@ -184,9 +183,5 @@ export class AppComponent implements OnInit {
         else
             this.modal.setSuccessMode();
         this.modal.updateContent(options.loadingIndicator, options.header, options.content, options.subheader);
-    }
-
-    print(event){
-        console.log('en appcomponent');
     }
 }

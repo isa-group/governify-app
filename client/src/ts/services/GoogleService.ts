@@ -67,7 +67,13 @@ export class GoogleService {
                     let request = this.gapi.client.drive.files.get({'fileId': id});
                     request.execute((resp) => {
                         this.headers.append('Authorization', 'Bearer ' + this.gapi.auth.getToken().access_token);
-                        resolve(resp);
+						console.log(resp);
+
+						if (resp.error){
+							reject(resp);
+						} else {
+                        	resolve(resp);
+						}
                     });
                 });
         });

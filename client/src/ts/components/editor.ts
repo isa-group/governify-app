@@ -9,7 +9,7 @@ import {LanguageService} from '../services/languageService';
 import {Http, HTTP_PROVIDERS, Response, Request, Headers} from 'angular2/http';
 import {ILanguage, IFormat, IOperation, IConfiguration, ILanguageResponse} from '../interfaces';
 import {ActionButton} from './action-button';
-import {ModalOptions} from '../modal';
+import {ModalOptions, ModalButton} from '../modal';
 
 @Component({
     selector: 'editor',
@@ -106,6 +106,7 @@ export class Editor implements OnChanges {
 
     @Output() initModal: EventEmitter<ModalOptions> = new EventEmitter();
     @Output() updateModal: EventEmitter<[ModalOptions, boolean]> = new EventEmitter();
+	@Output() loading: EventEmitter<boolean> = new EventEmitter();
 
     constructor(public http: Http, private _GS: GoogleService, private _languageService: LanguageService) {}
 
@@ -137,6 +138,8 @@ export class Editor implements OnChanges {
                 () => {
                     this._GS.loadDriveFile(this.id).then(
                         (file:Object) => {
+							this.loading.emit(false);
+							console.log(file)
                             this.fileName = file.title;
                             this.fileNameChange.next(this.fileName);
                             this.fileParents = file.parents;
@@ -154,7 +157,25 @@ export class Editor implements OnChanges {
                                         console.error('error getting file content');
                                     }
                                 )
-                        }
+                        },
+						(err) => {
+							this.loading.emit(false);
+							if (err.code === 404){
+								console.log(err);
+								this.initModal.emit({
+									loadingIndicator: false,
+									header: 'File not found',
+									subheader: err.message,
+									content: 'The file you are want to open does not exist in you drive. Try againg with another file.',
+									// buttons:[{
+									// 	text: 'exit',
+									// 	click: () =>  window.location.replace("http://localhost:3000"),
+									// 	type: 'flat'
+									// }]
+								});
+							}
+							console.log('file Not found');
+						}
                     )
 
                 }

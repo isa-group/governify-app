@@ -41,6 +41,7 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     this.ignoreChangeAceEvent = false;
                     this.initModal = new core_1.EventEmitter();
                     this.updateModal = new core_1.EventEmitter();
+                    this.loading = new core_1.EventEmitter();
                 }
                 Editor.prototype.ngOnChanges = function (changes) {
                     var _this = this;
@@ -68,6 +69,8 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                         this.initAce();
                         this._GS.authorize().then(function () {
                             _this._GS.loadDriveFile(_this.id).then(function (file) {
+                                _this.loading.emit(false);
+                                console.log(file);
                                 _this.fileName = file.title;
                                 _this.fileNameChange.next(_this.fileName);
                                 _this.fileParents = file.parents;
@@ -82,6 +85,18 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                                 }, function (err) {
                                     console.error('error getting file content');
                                 });
+                            }, function (err) {
+                                _this.loading.emit(false);
+                                if (err.code === 404) {
+                                    console.log(err);
+                                    _this.initModal.emit({
+                                        loadingIndicator: false,
+                                        header: 'File not found',
+                                        subheader: err.message,
+                                        content: 'The file you are want to open does not exist in you drive. Try againg with another file.',
+                                    });
+                                }
+                                console.log('file Not found');
                             });
                         });
                     }
@@ -223,6 +238,10 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                     core_1.Output(), 
                     __metadata('design:type', core_1.EventEmitter)
                 ], Editor.prototype, "updateModal", void 0);
+                __decorate([
+                    core_1.Output(), 
+                    __metadata('design:type', core_1.EventEmitter)
+                ], Editor.prototype, "loading", void 0);
                 Editor = __decorate([
                     core_1.Component({
                         selector: 'editor',

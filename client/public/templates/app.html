@@ -6,7 +6,7 @@
                     <a class="title white-text">{{ fileName }}</a>
                 </div>
                 <div class="col s9" id="toolbar">
-                    <tabs *ngIf="loaded &&
+                    <tabs *ngIf="!loading &&
                             extensions != null &&
                             extensions?.length > 0 &&
                             selectedFormat != null"
@@ -19,13 +19,14 @@
     </nav>
 
     <!--<div class="progress light-blue" style="margin:0;" >-->
-    <div class="progress light-blue" style="margin:0; bottom: 4px;" *ngIf="!loaded">
+    <div class="progress light-blue" style="margin:0; bottom: 4px;" *ngIf="loading">
         <div class="indeterminate white"></div>
     </div>
 </div>
 
 
 <editor
+	(loading)='loading=$event'
     (initModal)='initModal($event)'
     (updateModal)='updateModal($event)'
     [id]="fileId"

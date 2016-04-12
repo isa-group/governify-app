@@ -43,7 +43,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this._languageService = _languageService;
                     this._GS = _GS;
                     this.fileName = 'Governify';
-                    this.loaded = false;
+                    this.loading = true;
                     this.selectedFormat = '';
                     this.extensions = [''];
                     this.disabledTabs = false;
@@ -117,7 +117,6 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                 };
                 AppComponent.prototype.fileNameChangedEvent = function (fileName) {
                     this.fileName = fileName;
-                    this.loaded = true;
                 };
                 AppComponent.prototype.initModal = function (options) {
                     console.log('capturado evento INITmodal en appcomponent');
@@ -138,9 +137,6 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     else
                         this.modal.setSuccessMode();
                     this.modal.updateContent(options.loadingIndicator, options.header, options.content, options.subheader);
-                };
-                AppComponent.prototype.print = function (event) {
-                    console.log('en appcomponent');
                 };
                 AppComponent = __decorate([
                     core_1.Component({

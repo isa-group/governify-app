@@ -69,7 +69,13 @@ System.register(['angular2/core', 'angular2/http'], function(exports_1, context_
                             var request = _this.gapi.client.drive.files.get({ 'fileId': id });
                             request.execute(function (resp) {
                                 _this.headers.append('Authorization', 'Bearer ' + _this.gapi.auth.getToken().access_token);
-                                resolve(resp);
+                                console.log(resp);
+                                if (resp.error) {
+                                    reject(resp);
+                                }
+                                else {
+                                    resolve(resp);
+                                }
                             });
                         });
                     });

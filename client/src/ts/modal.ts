@@ -10,9 +10,9 @@ export interface ModalOptions {
 
 export interface ModalButton{
     text: string;
-    click: Function;
-    class: string;
     type: string;
+    click?: Function;
+    class?: string;
 }
 
 /**
@@ -77,11 +77,13 @@ export class Modal {
         if( this.buttons.length > 0){
             this.$modal.find('.modal-footer').empty();
         }
-        this.buttons.forEach((button: ModalButton) => {
-           let $button = $($('div'));
-           let classes = button.type === 'flat' ? 'btn-flat' : 'btn';
 
-           $button.addClass('modal-action modal-close ' + classes + button.class);
+        this.buttons.forEach((button: ModalButton) => {
+           let $button = $($('<div>', {
+				'class': 'modal-action modal-close ' + (button.type === 'flat' ? 'btn-flat blue-text' : 'btn white-text') + ' ' + (button.class ? button.class : ''),
+				'text': button.text
+			}));
+
            $button.on('click', () => {
               button.click();
            });
