@@ -76,7 +76,6 @@ export class ActionButton {
                 break;
             }
         }
-        console.log('emit initmodal')
         this.initModal.emit({header:operationName, loadingIndicator:true});
         this._languageService.executeOperation(this.languagePath, operationId, this.fileContent, this.fileUri)
             .subscribe(
@@ -96,17 +95,14 @@ export class ActionButton {
                         if(generativeOperations.indexOf(operationId) > -1){
                             this._GS.uploadFileToDrive(res.data, res.fileUri, this.fileParents)
                                 .then(
-                                    () =>{
+                                    () => {
                                         let options: ModalOptions = {
                                             header: operationName,
                                             subheader: subheader,
                                             content: res.message,
                                             loadingIndicator: false
                                         }
-                                        console.log('emit updatemodal')
                                         this.updateModal.emit([options, false]);
-
-                                        // this.replaceModalContentSuccess(false, operationName, res.message, subheader);
                                     }
                                 );
                         } else {
@@ -116,19 +112,21 @@ export class ActionButton {
                                 content: res.message,
                                 loadingIndicator: false
                             }
-                            console.log('emit updatemodal')
                             this.updateModal.emit([options, false]);
-                            // this.replaceModalContentSuccess(false, operationName, res.message, subheader);
                         }
                     } else {
-                        if (!res.message || res.message == "") options.content = "An error has happened.";
-                        console.log('emit updatemodal')
+                        // OK_PROBLEMS or ERROR
+                        if (!res.message || res.message == "") options.content = "An error has happened. Please try again.";
                         this.updateModal.emit([options, true]);
                         // this.replaceModalContentError(false, operationName, res.message);
                     }
                 },
                 (err) => {
-                    console.error(err);
+                    // Error in the ajax call.
+                    this.updateModal.emit([{header: operationName,
+                            content: 'Error executing operation. Please try again.',
+                            loadingIndicator: false
+                        }, true]);
                 }
             );
     }

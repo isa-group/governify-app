@@ -93,7 +93,12 @@ System.register(['angular2/core', '../services/GoogleService', '../services/lang
                                         loadingIndicator: false,
                                         header: 'File not found',
                                         subheader: err.message,
-                                        content: 'The file you are want to open does not exist in you drive. Try againg with another file.',
+                                        content: 'The file you try to open may not exist or you dont have enought permissions. Please try again.',
+                                        buttons: [{
+                                                text: 'exit',
+                                                click: function () { return window.location.replace(window.location.origin); },
+                                                type: 'flat'
+                                            }]
                                     });
                                 }
                                 console.log('file Not found');

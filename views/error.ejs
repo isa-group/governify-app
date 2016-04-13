@@ -1,3 +1,37 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+        <!--Let browser know website is optimized for mobile-->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="/node_modules/materialize-css/dist/css/materialize.min.css"  media="screen,projection"/>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+
+        <!--Fonts-->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    </head>
+    <body>
+        <div class="wrapper">
+            <nav class="blue">
+                <div class="nav-wrapper">
+                    <div class="row">
+                        <div class="col s12 title-wrapper">
+                            <a class="title white-text">Governify</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div class="center blue-text" style="position: absolute; top: 48px; width: 100%;">
+            <h4 class="blue-text">404 Oooops! Something went wrong !!</h4>
+            <h4 class="blue-text">The page you are looking for could not be found.</h4>
+            <p><a class="white-text btn red darken-2" href="javascript:window.location.replace(window.location.origin)">Take me home</a><p>
+        </div>
+    </body>
+</html>

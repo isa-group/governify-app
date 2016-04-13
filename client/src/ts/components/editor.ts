@@ -15,7 +15,7 @@ import {ModalOptions, ModalButton} from '../modal';
     selector: 'editor',
     templateUrl: 'templates/editor.html',
     providers: [LanguageService, GoogleService],
-	directives: [ActionButton]
+    directives: [ActionButton]
 })
 export class Editor implements OnChanges {
     /**
@@ -106,7 +106,7 @@ export class Editor implements OnChanges {
 
     @Output() initModal: EventEmitter<ModalOptions> = new EventEmitter();
     @Output() updateModal: EventEmitter<[ModalOptions, boolean]> = new EventEmitter();
-	@Output() loading: EventEmitter<boolean> = new EventEmitter();
+    @Output() loading: EventEmitter<boolean> = new EventEmitter();
 
     constructor(public http: Http, private _GS: GoogleService, private _languageService: LanguageService) {}
 
@@ -138,8 +138,8 @@ export class Editor implements OnChanges {
                 () => {
                     this._GS.loadDriveFile(this.id).then(
                         (file:Object) => {
-							this.loading.emit(false);
-							console.log(file)
+                            this.loading.emit(false);
+                            console.log(file)
                             this.fileName = file.title;
                             this.fileNameChange.next(this.fileName);
                             this.fileParents = file.parents;
@@ -158,24 +158,24 @@ export class Editor implements OnChanges {
                                     }
                                 )
                         },
-						(err) => {
-							this.loading.emit(false);
-							if (err.code === 404){
-								console.log(err);
-								this.initModal.emit({
-									loadingIndicator: false,
-									header: 'File not found',
-									subheader: err.message,
-									content: 'The file you are want to open does not exist in you drive. Try againg with another file.',
-									// buttons:[{
-									// 	text: 'exit',
-									// 	click: () =>  window.location.replace("http://localhost:3000"),
-									// 	type: 'flat'
-									// }]
-								});
-							}
-							console.log('file Not found');
-						}
+                        (err) => {
+                            this.loading.emit(false);
+                            if (err.code === 404){
+                                console.log(err);
+                                this.initModal.emit({
+                                    loadingIndicator: false,
+                                    header: 'File not found',
+                                    subheader: err.message,
+                                    content: 'The file you try to open may not exist or you dont have enought permissions. Please try again.',
+                                    buttons:[{
+                                        text: 'exit',
+                                        click: () =>  window.location.replace(window.location.origin),
+                                        type: 'flat'
+                                    }]
+                                });
+                            }
+                            console.log('file Not found');
+                        }
                     )
 
                 }

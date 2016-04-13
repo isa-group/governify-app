@@ -76,7 +76,6 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                             break;
                         }
                     }
-                    console.log('emit initmodal');
                     this.initModal.emit({ header: operationName, loadingIndicator: true });
                     this._languageService.executeOperation(this.languagePath, operationId, this.fileContent, this.fileUri)
                         .subscribe(function (res) {
@@ -100,7 +99,6 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                                         content: res.message,
                                         loadingIndicator: false
                                     };
-                                    console.log('emit updatemodal');
                                     _this.updateModal.emit([options, false]);
                                 });
                             }
@@ -111,18 +109,19 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                                     content: res.message,
                                     loadingIndicator: false
                                 };
-                                console.log('emit updatemodal');
                                 _this.updateModal.emit([options_1, false]);
                             }
                         }
                         else {
                             if (!res.message || res.message == "")
-                                options.content = "An error has happened.";
-                            console.log('emit updatemodal');
+                                options.content = "An error has happened. Please try again.";
                             _this.updateModal.emit([options, true]);
                         }
                     }, function (err) {
-                        console.error(err);
+                        _this.updateModal.emit([{ header: operationName,
+                                content: 'Error executing operation. Please try again.',
+                                loadingIndicator: false
+                            }, true]);
                     });
                 };
                 __decorate([
