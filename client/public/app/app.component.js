@@ -1,6 +1,4 @@
-System.register(['angular2/core', 'angular2/http', './services/languageService', './services/GoogleService', 'rxjs/Rx', './components/tabs', './components/editor', './modal'], function(exports_1, context_1) {
-    "use strict";
-    var __moduleName = context_1 && context_1.id;
+System.register(['angular2/core', 'angular2/http', './services/languageService', './services/GoogleService', 'rxjs/Rx', './components/tabs', './components/editor', './modal'], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11,7 +9,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
     var core_1, http_1, languageService_1, GoogleService_1, tabs_1, editor_1, modal_1;
-    var AppComponent;
+    var authorize, AppComponent;
     return {
         setters:[
             function (core_1_1) {
@@ -47,10 +45,36 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.selectedFormat = '';
                     this.extensions = [''];
                     this.disabledTabs = false;
+                    this.pepe = false;
                 }
+                AppComponent.prototype.signIn = function () {
+                };
                 AppComponent.prototype.ngOnInit = function () {
                     var _this = this;
-                    $('body').removeClass('unresolved');
+                    gapi.load("auth2", function () {
+                        $('body').removeClass('unresolved');
+                        var googleAuth = gapi.auth2.init({
+                            client_id: _this._GS.clientId
+                        });
+                        googleAuth.then(function () {
+                            var isAuth = googleAuth.isSignedIn.get();
+                            _this.pepe = isAuth;
+                            if (!_this.pepe) {
+                            }
+                            else {
+                                _this.init();
+                            }
+                            googleAuth.isSignedIn.listen(function (isAuth) {
+                                _this.pepe = isAuth;
+                            });
+                        }, function () {
+                            console.error("Google user can't be checked");
+                        });
+                    });
+                };
+                AppComponent.prototype.init = function () {
+                    var _this = this;
+                    this.pepe = true;
                     this.languages = {};
                     var getConfigLang = new Promise(function (resolve, reject) {
                         _this.http.get('/api/configuration')
@@ -84,6 +108,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                         _this.fileId = _this.getUrlParameters('ids');
                     });
                 };
+                ;
                 AppComponent.prototype.getUrlParameters = function (param) {
                     var result = null, query = window.location.search, map = {};
                     if (param === null || query === '') {
@@ -109,8 +134,8 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.languageSettings = this.languages[ext];
                     var formats = this.languageSettings.formats;
                     this.extensions = [];
-                    for (var _i = 0, formats_1 = formats; _i < formats_1.length; _i++) {
-                        var f = formats_1[_i];
+                    for (var _i = 0; _i < formats.length; _i++) {
+                        var f = formats[_i];
                         this.extensions.push(f.format);
                     }
                     this.selectedFormat = this.extensions[0];
@@ -148,7 +173,7 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     __metadata('design:paramtypes', [http_1.Http, languageService_1.LanguageService, GoogleService_1.GoogleService])
                 ], AppComponent);
                 return AppComponent;
-            }());
+            })();
             exports_1("AppComponent", AppComponent);
         }
     }

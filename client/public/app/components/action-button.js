@@ -1,6 +1,4 @@
-System.register(['angular2/core', '../services/languageService', '../services/GoogleService', '../pipes/remoteOperationsOnly'], function(exports_1, context_1) {
-    "use strict";
-    var __moduleName = context_1 && context_1.id;
+System.register(['angular2/core', '../services/languageService', '../services/GoogleService', '../pipes/remoteOperationsOnly'], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -86,7 +84,7 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                             loadingIndicator: false
                         };
                         if (res.status != 'OK_PROBLEMS' && res.status != "ERROR") {
-                            var subheader_1;
+                            var subheader;
                             if (res.fileUri && res.fileUri !== "") {
                                 options.subheader = "File: " + res.fileUri;
                             }
@@ -95,7 +93,7 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                                     .then(function () {
                                     var options = {
                                         header: operationName,
-                                        subheader: subheader_1,
+                                        subheader: subheader,
                                         content: res.message,
                                         loadingIndicator: false
                                     };
@@ -105,7 +103,7 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                             else {
                                 var options_1 = {
                                     header: operationName,
-                                    subheader: subheader_1,
+                                    subheader: subheader,
                                     content: res.message,
                                     loadingIndicator: false
                                 };
@@ -162,7 +160,7 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                     __metadata('design:paramtypes', [GoogleService_1.GoogleService, languageService_1.LanguageService])
                 ], ActionButton);
                 return ActionButton;
-            }());
+            })();
             exports_1("ActionButton", ActionButton);
         }
     }

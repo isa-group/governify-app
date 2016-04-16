@@ -6,13 +6,17 @@
                     <a class="title white-text">{{ fileName }}</a>
                 </div>
                 <div class="col s9" id="toolbar">
-                    <tabs *ngIf="!loading &&
+                    <tabs *ngIf="pepe && !loading &&
                             extensions != null &&
                             extensions?.length > 0 &&
                             selectedFormat != null"
                         [tabs]="extensions"
                         [(selectedFormat)]="selectedFormat"
                         [(disabledTabs)]="disabledTabs"></tabs>
+                    <div *ngIf="!pepe">
+                        <img src="../img/sign_in.png" (click)="signIn">
+                        <!--<div id="my-signin2" class="right valign-wrapper"></div>-->
+                    </div>
                 </div>
             </div>
         </div>

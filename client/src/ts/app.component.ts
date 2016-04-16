@@ -15,6 +15,7 @@ import { IConfiguration, ILanguage, IFormat, IOperation} from './interfaces';
 import {Tabs} from './components/tabs';
 import {Editor} from './components/editor';
 import {Modal, ModalOptions, ModalButton} from './modal';
+import authorize = gapi.auth.authorize;
 
 
 @Component({
@@ -78,44 +79,77 @@ export class AppComponent implements OnInit {
      */
     disabledTabs: boolean = false;
     modal: Modal;
+    pepe: boolean = false;
 
-    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) { }
-    ngOnInit(){
-        $('body').removeClass('unresolved');
+    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {
+
+    }
+
+    signIn() {
+
+    }
+    ngOnInit() {
+        gapi.load("auth2", () => {
+            $('body').removeClass('unresolved');
+            let googleAuth = gapi.auth2.init({
+                client_id: this._GS.clientId
+                //cookie_policy: "none"
+            });
+            googleAuth.then(
+                () => {
+                    let isAuth = googleAuth.isSignedIn.get();
+                    this.pepe = isAuth;
+                    if (!this.pepe) {
+                    } else {
+                        this.init();
+                    }
+                    googleAuth.isSignedIn.listen((isAuth) => {
+                        this.pepe = isAuth;
+                    });
+                },
+                () => {
+                    console.error("Google user can't be checked");
+                }
+            );
+        });
+    }
+
+    init() {
+        this.pepe = true;
 
         this.languages = {};
 
-        let getConfigLang =  new Promise ((resolve, reject) => {
+        let getConfigLang = new Promise((resolve, reject) => {
             this.http.get('/api/configuration')
                 .map(res => res.json())
                 .subscribe(
-                (data) => {
-                    this.configuration = data;
-                    let aLenguagesDeferred = [];
-                    $.each(this.configuration.languages, (languageId, languagePath) => {
-                        aLenguagesDeferred.push((() => {
-                            let d = new Promise((resolve, reject) => {
-                                this._languageService.getLanguage(languagePath)
-                                    .subscribe(
-                                    (lang: ILanguage) => {
-                                        this.languages[lang.extension] = lang;
-                                        resolve();
-                                    },
-                                    (err) => {
-                                        console.error(err);
-                                        reject();
-                                    });
-                            });
-                            return d;
-                        })());
+                    (data) => {
+                        this.configuration = data;
+                        let aLenguagesDeferred = [];
+                        $.each(this.configuration.languages, (languageId, languagePath) => {
+                            aLenguagesDeferred.push((() => {
+                                let d = new Promise((resolve, reject) => {
+                                    this._languageService.getLanguage(languagePath)
+                                        .subscribe(
+                                            (lang:ILanguage) => {
+                                                this.languages[lang.extension] = lang;
+                                                resolve();
+                                            },
+                                            (err) => {
+                                                console.error(err);
+                                                reject();
+                                            });
+                                });
+                                return d;
+                            })());
 
-                    });
+                        });
 
-                    Promise.all(aLenguagesDeferred).then(() => resolve(), ()=> reject());
-                },
-                (err) => {
-                    console.error(err);
-                })
+                        Promise.all(aLenguagesDeferred).then(() => resolve(), ()=> reject());
+                    },
+                    (err) => {
+                        console.error(err);
+                    })
         });
 
         Promise.all([
@@ -123,7 +157,7 @@ export class AppComponent implements OnInit {
         ]).then(() => {
             this.fileId = this.getUrlParameters('ids');
         });
-    }
+    };
 
     getUrlParameters(param: string) {
         let result = null,
