@@ -1,20 +1,65 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title><%= title %></title>
+<head>
+    <title><%= title %></title>
 
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
-        <!--Let browser know website is optimized for mobile-->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-COMPATIBLE" content="IE=edge">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-        <% include templates/head.ejs %>
+    <meta name="google-signin-scope" content="https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive email profile">
+    <meta name="google-signin-client_id" content="460896514595-568adgcd2u9j9ue8s1kmn5l2un6lieqt.apps.googleusercontent.com">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="/node_modules/materialize-css/dist/css/materialize.min.css"  media="screen,projection"/>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
 
-    </head>
-    <body class="unresolved">
-        <% include templates/body %>
-    </body>
+    <!--Fonts-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">]
+</head>
+<body>
+<div class="wrapper">
+    <nav class="blue">
+        <div class="nav-wrapper">
+            <div class="row">
+                <div class="col s12 title-wrapper">
+                    <a class="title white-text">Governify</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="blue-text" style="position: absolute; top: 48px; width: 100%;">
+    <div class="container" style="padding-top: 24px;">
+        <H4>How to</H4>
+        <div>For being able of opening files with Google Drive, you need to grant the proper permissions to the application by logging in with your Google account.<br/>
+             Please click on the following button:
+
+        </div>
+        <br/>
+        <div id="my-signin2" class="center-align"></div>
+    </div>
+</div>
+<script>
+    function onSuccess() {
+        console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+    }
+    function onFailure(error) {
+        console.log(error);
+    }
+
+    function renderButton() {
+        gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'width': 240,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'light',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+        });
+    }
+</script>
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+</body>
 </html>
-
-
-

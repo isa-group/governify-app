@@ -6,16 +6,15 @@
                     <a class="title white-text">{{ fileName }}</a>
                 </div>
                 <div class="col s9" id="toolbar">
-                    <tabs *ngIf="pepe && !loading &&
+                    <tabs *ngIf="authorize && !loading &&
                             extensions != null &&
                             extensions?.length > 0 &&
                             selectedFormat != null"
                         [tabs]="extensions"
                         [(selectedFormat)]="selectedFormat"
                         [(disabledTabs)]="disabledTabs"></tabs>
-                    <div *ngIf="!pepe">
-                        <img src="../img/sign_in.png" (click)="signIn">
-                        <!--<div id="my-signin2" class="right valign-wrapper"></div>-->
+                    <div *ngIf="!authorize">
+                        <div id="my-signin2" class="right valign-wrapper"></div>
                     </div>
                 </div>
             </div>
@@ -23,7 +22,7 @@
     </nav>
 
     <!--<div class="progress light-blue" style="margin:0;" >-->
-    <div class="progress light-blue" style="margin:0; bottom: 4px;" *ngIf="loading">
+    <div class="progress light-blue" style="margin:0; bottom: 4px;" *ngIf="authorize && loading">
         <div class="indeterminate white"></div>
     </div>
 </div>

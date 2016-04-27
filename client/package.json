@@ -1,6 +1,6 @@
 {
     "name": "governify_app",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "license": "MIT",
     "repository": {
         "type": "git",
@@ -11,15 +11,15 @@
         "Rafael Miguel Rivero Rodríguez"
     ],
     "keywords": [
-        "Angular2",
-        "TypeScript",
-        "GitHub",
-        "Nodejs",
-        "Express",
-        "Less",
-        "EJS",
-        "Heroku"
-    ],
+    "Angular2",
+    "TypeScript",
+    "GitHub",
+    "Nodejs",
+    "Express",
+    "Less",
+    "EJS",
+    "Heroku"
+],
     "dependencies": {
         "angular2": "2.0.0-beta.0",
         "es6-promise": "3.0.2",

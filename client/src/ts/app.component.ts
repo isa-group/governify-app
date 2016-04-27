@@ -79,7 +79,7 @@ export class AppComponent implements OnInit {
      */
     disabledTabs: boolean = false;
     modal: Modal;
-    pepe: boolean = false;
+    authorize: boolean = false;
 
     constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {
 
@@ -89,34 +89,72 @@ export class AppComponent implements OnInit {
 
     }
     ngOnInit() {
-        gapi.load("auth2", () => {
-            $('body').removeClass('unresolved');
-            let googleAuth = gapi.auth2.init({
-                client_id: this._GS.clientId
-                //cookie_policy: "none"
-            });
-            googleAuth.then(
-                () => {
-                    let isAuth = googleAuth.isSignedIn.get();
-                    this.pepe = isAuth;
-                    if (!this.pepe) {
-                    } else {
-                        this.init();
+        var self = this;
+        new Promise((resolve, reject) => {
+            gapi.load("auth2", () => {
+                $('body').removeClass('unresolved');
+                let googleAuth = gapi.auth2.init({
+                    client_id: this._GS.clientId,
+                    scope: "https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive email profile"
+                    //cookie_policy: "none"
+                });
+                googleAuth.then(
+                    () => {
+                        resolve(googleAuth);
+                    },
+                    () => {
+                        console.error("Google user can't be checked");
+                        reject();
                     }
-                    googleAuth.isSignedIn.listen((isAuth) => {
-                        this.pepe = isAuth;
+                );
+                googleAuth.isSignedIn.listen((isAuth) => {
+                    isAuth ? resolve(googleAuth) : reject();
+                });
+                //gapi.auth2.currentUser.listen(() => resolve(googleAuth));
+            });
+        }).then((googleAuth) => {
+            this.authorize = googleAuth.isSignedIn.get();
+            let scopes = 'profile email https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive';
+            if (this.authorize) {
+                let googleUser = googleAuth.currentUser.get();
+                console.log(googleUser);
+                console.log(googleUser.hasGrantedScopes(scopes));
+                if (googleUser.hasGrantedScopes(scopes)) {
+                    this.init();
+                } else {
+                    //googleUser.disconnect();
+                    //this.createSignInButton(scopes);
+                    googleUser.signIn({
+                        'scope': 'profile email https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive'
                     });
-                },
-                () => {
-                    console.error("Google user can't be checked");
                 }
-            );
+            } else {
+                this.createSignInButton(scopes);
+            }
         });
     }
 
-    init() {
-        this.pepe = true;
+    private createSignInButton(scopes) {
+        new Promise((resolve, reject) => {
+            gapi.signin2.render('my-signin2', {
+                'scope': scopes,
+                'width': 150,
+                'height': 36,
+                'longtitle': false,
+                'theme': 'light',
+                'onsuccess': resolve,
+                'onfailure': reject
+            });
+        }).then(
+            () => {
+                this.authorize = true;
+                this.init()
+            },
+            () => this.authorize = false
+        );
+    };
 
+    init() {
         this.languages = {};
 
         let getConfigLang = new Promise((resolve, reject) => {
@@ -155,9 +193,20 @@ export class AppComponent implements OnInit {
         Promise.all([
             getConfigLang
         ]).then(() => {
-            this.fileId = this.getUrlParameters('ids');
+            this.fileId = this.getIdFromURL();
         });
     };
+
+    getIdFromURL() {
+        let pathname = window.location.pathname,
+            regex = /^\/ids\/([\d\w]+)/g,
+            match = regex.exec(pathname),
+            result = null;
+        if (match && match.length > 1) {
+            result = match[1];
+        }
+        return result;
+    }
 
     getUrlParameters(param: string) {
         let result = null,

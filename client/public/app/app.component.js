@@ -45,36 +45,71 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.selectedFormat = '';
                     this.extensions = [''];
                     this.disabledTabs = false;
-                    this.pepe = false;
+                    this.authorize = false;
                 }
                 AppComponent.prototype.signIn = function () {
                 };
                 AppComponent.prototype.ngOnInit = function () {
                     var _this = this;
-                    gapi.load("auth2", function () {
-                        $('body').removeClass('unresolved');
-                        var googleAuth = gapi.auth2.init({
-                            client_id: _this._GS.clientId
+                    var self = this;
+                    new Promise(function (resolve, reject) {
+                        gapi.load("auth2", function () {
+                            $('body').removeClass('unresolved');
+                            var googleAuth = gapi.auth2.init({
+                                client_id: _this._GS.clientId,
+                                scope: "https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive email profile"
+                            });
+                            googleAuth.then(function () {
+                                resolve(googleAuth);
+                            }, function () {
+                                console.error("Google user can't be checked");
+                                reject();
+                            });
+                            googleAuth.isSignedIn.listen(function (isAuth) {
+                                isAuth ? resolve(googleAuth) : reject();
+                            });
                         });
-                        googleAuth.then(function () {
-                            var isAuth = googleAuth.isSignedIn.get();
-                            _this.pepe = isAuth;
-                            if (!_this.pepe) {
-                            }
-                            else {
+                    }).then(function (googleAuth) {
+                        _this.authorize = googleAuth.isSignedIn.get();
+                        var scopes = 'profile email https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive';
+                        if (_this.authorize) {
+                            var googleUser = googleAuth.currentUser.get();
+                            console.log(googleUser);
+                            console.log(googleUser.hasGrantedScopes(scopes));
+                            if (googleUser.hasGrantedScopes(scopes)) {
                                 _this.init();
                             }
-                            googleAuth.isSignedIn.listen(function (isAuth) {
-                                _this.pepe = isAuth;
-                            });
-                        }, function () {
-                            console.error("Google user can't be checked");
-                        });
+                            else {
+                                googleUser.signIn({
+                                    'scope': 'profile email https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive'
+                                });
+                            }
+                        }
+                        else {
+                            _this.createSignInButton(scopes);
+                        }
                     });
                 };
+                AppComponent.prototype.createSignInButton = function (scopes) {
+                    var _this = this;
+                    new Promise(function (resolve, reject) {
+                        gapi.signin2.render('my-signin2', {
+                            'scope': scopes,
+                            'width': 150,
+                            'height': 36,
+                            'longtitle': false,
+                            'theme': 'light',
+                            'onsuccess': resolve,
+                            'onfailure': reject
+                        });
+                    }).then(function () {
+                        _this.authorize = true;
+                        _this.init();
+                    }, function () { return _this.authorize = false; });
+                };
+                ;
                 AppComponent.prototype.init = function () {
                     var _this = this;
-                    this.pepe = true;
                     this.languages = {};
                     var getConfigLang = new Promise(function (resolve, reject) {
                         _this.http.get('/api/configuration')
@@ -105,10 +140,17 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     Promise.all([
                         getConfigLang
                     ]).then(function () {
-                        _this.fileId = _this.getUrlParameters('ids');
+                        _this.fileId = _this.getIdFromURL();
                     });
                 };
                 ;
+                AppComponent.prototype.getIdFromURL = function () {
+                    var pathname = window.location.pathname, regex = /^\/ids\/([\d\w]+)/g, match = regex.exec(pathname), result = null;
+                    if (match && match.length > 1) {
+                        result = match[1];
+                    }
+                    return result;
+                };
                 AppComponent.prototype.getUrlParameters = function (param) {
                     var result = null, query = window.location.search, map = {};
                     if (param === null || query === '') {
