@@ -8,14 +8,16 @@
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
+
     <meta name="google-signin-scope" content="https://www.googleapis.com/auth/drive.install https://www.googleapis.com/auth/drive email profile">
     <meta name="google-signin-client_id" content="460896514595-568adgcd2u9j9ue8s1kmn5l2un6lieqt.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="/node_modules/materialize-css/dist/css/materialize.min.css"  media="screen,projection"/>
     <link rel='stylesheet' href='/stylesheets/style.css' />
 
     <!--Fonts-->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">]
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
 <div class="wrapper">
@@ -61,5 +63,6 @@
     }
 </script>
 <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+<script src="https://apis.google.com/js/client.js?onload=googleOnLoadCallback"></script>
 </body>
 </html>
