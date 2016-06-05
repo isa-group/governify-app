@@ -52,7 +52,6 @@ System.register(['angular2/core', '../services/languageService', '../services/Go
                         "smallsampling": "colorize",
                         "transform2iAgree": "transform"
                     };
-                    this.$modal = $('#executeModal');
                 }
                 ActionButton.prototype.executeOperation = function ($event, operationId) {
                     var _this = this;

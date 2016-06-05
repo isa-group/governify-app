@@ -47,8 +47,6 @@ System.register(['angular2/core', 'angular2/http', './services/languageService',
                     this.disabledTabs = false;
                     this.authorize = false;
                 }
-                AppComponent.prototype.signIn = function () {
-                };
                 AppComponent.prototype.ngOnInit = function () {
                     var _this = this;
                     var self = this;

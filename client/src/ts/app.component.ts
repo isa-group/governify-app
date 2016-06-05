@@ -78,16 +78,19 @@ export class AppComponent implements OnInit {
      * @type {boolean}
      */
     disabledTabs: boolean = false;
+    /**
+     * The modal dialog.
+     * @type {Modal}
+     */
     modal: Modal;
+    /**
+     * Whether the user is authorized.
+     * @type {boolean}
+     */
     authorize: boolean = false;
 
-    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {
+    constructor(public http: Http, private _languageService: LanguageService, private _GS: GoogleService) {}
 
-    }
-
-    signIn() {
-
-    }
     ngOnInit() {
         var self = this;
         new Promise((resolve, reject) => {

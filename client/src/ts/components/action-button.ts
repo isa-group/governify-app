@@ -18,12 +18,40 @@ import {ModalOptions, ModalButton} from '../modal';
     pipes: [RemoteOperationsOnly]
 })
 export class ActionButton {
+    /**
+     * The list of operations available on a language.
+     * @type {IOperation[]}
+     */
     @Input() operations: IOperation[];
+    /**
+     * The relative path of the language within the url.
+     * @type {string}
+     */
     @Input() languagePath: string;
+    /**
+     * The file's content.
+     * @type {string}
+     */
     @Input() fileContent: string;
+    /**
+     * The file uri.
+     * @type {string}
+     */
     @Input() fileUri: string;
+    /**
+     * The list of parent files.
+     * @type {string[]}
+     */
     @Input() fileParents: string[];
+    /**
+     * The emitter that initiates the modal.
+     * @type {EventEmitter}
+     */
     @Output() initModal: EventEmitter<ModalOptions> = new EventEmitter();
+    /**
+     * The emitter that updates the modal.
+     * @type {EventEmitter}
+     */
     @Output() updateModal: EventEmitter<[ModalOptions, boolean]> = new EventEmitter();
 
     iconMap: Object = {
@@ -47,7 +75,6 @@ export class ActionButton {
         "smallsampling": "colorize",
         "transform2iAgree": "transform"
     };
-    $modal: JQuery = $('#executeModal');
 
     constructor( private _GS: GoogleService, private _languageService: LanguageService){}
 
